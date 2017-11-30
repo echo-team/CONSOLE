@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "CONSOLE",
+    "version": "0.0.1",
+
+    "content_scripts":
+    [
+        {
+            "matches": [ "*://*/*" ],
+            "js": [ "content.js" ]
+        }
+    ],
+    "background":
+    {
+        "scripts": ["background.js"]
+    },
+    "permissions":
+    [
+        "http://*/*",
+        "https://*/*"
+    ]
+
+}
