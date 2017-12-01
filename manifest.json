@@ -3,14 +3,21 @@
     "name": "CONSOLE",
     "version": "0.0.1",
 
+    "browser_action":
+    {
+        "default_icon":
+        {
+            "32": "IMAGE/NOCONSOLE.PNG"
+        }
+    },
+
     "background":
     {
-        "scripts": ["JS/BACKGROUND.JS"]
+        "scripts": ["JS/CORE.JS", "JS/BUTTON.JS", "JS/BACKGROUND.JS"]
     },
     "permissions":
     [
-        "http://*/*",
-        "https://*/*"
+        "tabs"
     ]
 
 }
