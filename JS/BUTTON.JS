@@ -54,8 +54,12 @@ function Button(core)
         {
             consoleState = null;
         }
+
+        console.log("Current tab id - ", current);
+        console.log("Type of tab - ", type);
+        console.log("Console state - ", consoleState);
     }
 
-    chrome.browserAction.onClicked.addEventListener(toggleConsole.bind(this));
-    chrome.tabs.onActivated.addEventListener(changeState.bind(this));
+    chrome.tabs.onActivated.addListener(changeState.bind(this));
+    chrome.browserAction.onClicked.addListener(toggleConsole.bind(this));
 }

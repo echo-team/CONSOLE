@@ -11,9 +11,17 @@ function Core()
      * @param {Number} tab - index of tab
      * @return {Number} - 1 if tab is open, 0 if not
      */
-    this.isOpen(tab)
+    this.isOpen = function(tab)
     {
-        return opened.indexOf(tab) == -1 ? 0 : 1;
+        for (var key in opened)
+        {
+            if (opened[key] == tab)
+            {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -22,7 +30,7 @@ function Core()
      * @param {Number} tab - index of tab
      * @return {Number} - 1 if tab is of "CONSOLE" type, 0 if not
      */
-    this.isConsole(tab)
+    this.isConsole = function(tab)
     {
         return opened[tab] == undefined ? 0 : 1;
     }
@@ -36,7 +44,8 @@ function Core()
     {
         chrome.tabs.create({}, (function(consoleTab)
                           {
-                              opened[consoleTab] = tab;
+                              opened[consoleTab.id] = tab;
+                              console.log(opened);
                           }).bind(this));
     }
 
