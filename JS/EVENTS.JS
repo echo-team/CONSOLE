@@ -8,7 +8,7 @@ function Event()
     
     /**
      * Adds event listener to the event
-     * @param {Function} - event listener to add
+     * @param {Function} listener - event listener to add
      */
     this.addEventListener = function(listener)
     {
@@ -17,7 +17,7 @@ function Event()
     
     /**
      * Removes event listener from the event
-     * @param {Function} - event listener to remove
+     * @param {Function} listener - event listener to remove
      */
     this.removeEventListener = function(listener)
     {
@@ -26,6 +26,18 @@ function Event()
         if (index != -1)
         {
             listeners.splice(index, 1);
+        }
+    }
+    
+    /**
+     * Dispatches event immediately, calls all functions from listeners array
+     * @param {Object} event - object to pass to listener
+     */
+    this.dispatch = function(event)
+    {
+        for (var counter = 0; counter < listeners.length; counter++)
+        {
+            listeners[counter](event);
         }
     }
 }
