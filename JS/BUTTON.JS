@@ -10,7 +10,7 @@ function Button(core)
     * State of the console: 1 if opened, 0 if closed
     * @type {Number}
     */
-    var consoleState = null;
+    var terminal = null;
 
     /**
     * ID of the active tab in browser
@@ -22,16 +22,17 @@ function Button(core)
     {
         if (type == "DEFAULT")
         {
-            switch (consoleState)
+            switch (terminal)
             {
-                case false:
+                case null:
 
                     core.open(current);
                     break;
 
-                case true:
+                default:
 
-                    core.close(current);
+                    core.close(terminal);
+                    terminal = null;
                     break;
 
             }
@@ -49,14 +50,9 @@ function Button(core)
 
         if (type != "CONSOLE")
         {
-            consoleState = core.consoleId() == null ? false : true;
-        }
-        else
-        {
-            consoleState = false;
+            terminal = core.consoleId(event.target.id);
         }
 
-        console.log("Type of tab - ", type);
     }
 
     core.onTypeChanged.addEventListener(changeState.bind(this));

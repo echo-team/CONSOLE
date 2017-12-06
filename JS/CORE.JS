@@ -61,7 +61,7 @@ function Core()
     {
         for (var key in opened)
         {
-            if (opened[key] !== tab)
+            if (opened[key] == tab)
             {
                 return key;
             }
@@ -91,8 +91,8 @@ function Core()
      */
     this.close = function(tab)
     {
-        chrome.tabs.remove(tab);
-        opened[tab] = undefined;
+        chrome.tabs.remove(parseInt(tab));
+        delete opened[tab];
     }
 
     chrome.tabs.onActivated.addListener(typeChanged.bind(this));
