@@ -37,6 +37,10 @@ function Button(core)
 
             }
         }
+        else if (type == "CONSOLE")
+        {
+            core.close(current);
+        }
     }
 
     /**
