@@ -1,4 +1,4 @@
-function Event()
+function ClassEvent()
 {
     /**
      * Array of functions to parse when event is dispatched

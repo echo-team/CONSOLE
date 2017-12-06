@@ -24,15 +24,16 @@ function Button(core)
         {
             switch (consoleState)
             {
-                case 0:
+                case false:
 
                     core.open(current);
                     break;
 
-                case 1:
+                case true:
 
                     core.close(current);
                     break;
+
             }
         }
     }
@@ -43,23 +44,21 @@ function Button(core)
      */
     function changeState(event)
     {
-        current = event.tabId;
-        type = core.isConsole(current) ? "CONSOLE" : "DEFAULT";
+        current = event.target.id;
+        type = event.target.type;
 
         if (type != "CONSOLE")
         {
-            consoleState = core.isOpen();
+            consoleState = core.consoleId() == null ? false : true;
         }
         else
         {
-            consoleState = null;
+            consoleState = false;
         }
 
-        console.log("Current tab id - ", current);
         console.log("Type of tab - ", type);
-        console.log("Console state - ", consoleState);
     }
 
-    chrome.tabs.onActivated.addListener(changeState.bind(this));
+    core.onTypeChanged.addEventListener(changeState.bind(this));
     chrome.browserAction.onClicked.addListener(toggleConsole.bind(this));
 }

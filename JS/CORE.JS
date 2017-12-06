@@ -1,38 +1,73 @@
 function Core()
 {
     /**
-     * Object of opened tabs
+     * Array of opened tabs
+     * @type {Array}
      */
     var opened = {};
 
     /**
-     * Checks if "CONSOLE" tab is open
-     *
-     * @param {Number} tab - index of tab
-     * @return {Number} - 1 if tab is open, 0 if not
+     * Instance of the Settings class
      */
-    this.isOpen = function(tab)
-    {
-        for (var key in opened)
+    var settings =
         {
-            if (opened[key] == tab)
-            {
-                return 1;
-            }
+            makeConsoleActive: 1
         }
 
-        return 0;
+    /**
+     * Type of recently opened tab
+     * "CONSOLE" if the console was opened, "DEFAULT" if not
+     * @type {String}
+     */
+    var typeOfCurrentTab = "DEFAULT";
+
+    /**
+     * Event of new tab opening
+     * @type {ClassEvent}
+     */
+    this.onTypeChanged = new ClassEvent();
+
+    /**
+     * Event listener of the onActivated event in chrome.tabs
+     */
+    function typeChanged(tab)
+    {
+        console.log(opened);
+        console.log(tab);
+        if (opened[tab.tabId] !== undefined)
+        {
+            typeOfCurrentTab = "CONSOLE";
+        }
+
+        var event =
+            {
+                target:
+                {
+                    id: tab.tabId,
+                    type: typeOfCurrentTab
+                }
+            }
+
+        this.onTypeChanged.dispatch(event);
+        typeOfCurrentTab = "DEFAULT";
     }
 
     /**
-     * Checks if tab is of "CONSOLE" type
-     *
+     * Returns the id of "CONSOLE" tab for this "DEFAULT" tab
      * @param {Number} tab - index of tab
-     * @return {Number} - 1 if tab is of "CONSOLE" type, 0 if not
+     * @return {Number} - id of the "CONSOLE" tab or null
      */
-    this.isConsole = function(tab)
+    this.consoleId = function(tab)
     {
-        return opened[tab] == undefined ? 0 : 1;
+        for (var key in opened)
+        {
+            if (opened[key] !== tab)
+            {
+                return key;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -42,10 +77,10 @@ function Core()
      */
     this.open = function(tab)
     {
+        typeOfCurrentTab = "CONSOLE";
         chrome.tabs.create({}, (function(consoleTab)
                           {
                               opened[consoleTab.id] = tab;
-                              console.log(opened);
                           }).bind(this));
     }
 
@@ -59,4 +94,6 @@ function Core()
         chrome.tabs.remove(tab);
         opened[tab] = undefined;
     }
+
+    chrome.tabs.onActivated.addListener(typeChanged.bind(this));
 }
