@@ -5,10 +5,7 @@
 
     "browser_action":
     {
-        "default_icon":
-        {
-            "32": "IMAGE/NOCONSOLE.PNG"
-        }
+        "icon": "IMG/OPENNOACTIVE.SVG"
     },
 
     "background":
