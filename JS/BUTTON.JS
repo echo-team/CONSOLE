@@ -44,6 +44,28 @@ function Button(core)
     }
 
     /**
+     * Changes the main button picture
+     */
+    function changeIcon()
+    {
+        if (type == "CONSOLE")
+        {
+            chrome.browserAction.setIcon({path: "../IMG/CLOSEACTIVE.PNG"});
+        }
+        else if (type == "DEFAULT")
+        {
+            if (terminal === null)
+            {
+                chrome.browserAction.setIcon({path: "../IMG/OPENNOACTIVE.PNG"});
+            }
+            else
+            {
+                chrome.browserAction.setIcon({path: "../IMG/CLOSENOACTIVE.PNG"});
+            }
+        }
+    }
+
+    /**
      * Changes state of the main button in dependace of the active tab
      * @param {activeInfo} event - information about the activated tab
      */
@@ -56,6 +78,8 @@ function Button(core)
         {
             terminal = core.consoleId(event.target.id);
         }
+
+        changeIcon();
 
     }
 

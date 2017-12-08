@@ -5,7 +5,7 @@
 
     "browser_action":
     {
-        "icon": "IMG/OPENNOACTIVE.SVG"
+        "icon": "IMG/OPENNOACTIVE.PNG"
     },
 
     "background":
