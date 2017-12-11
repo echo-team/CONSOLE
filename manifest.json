@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "CONSOLE",
+    "version": "0.0.1",
+
+    "browser_action":
+    {
+        "icon": "IMG/OPENNOACTIVE.PNG"
+    },
+
+    "background":
+    {
+        "scripts": ["JS/EVENTS.JS", "JS/CORE.JS", "JS/BUTTON.JS", "JS/BACKGROUND.JS"]
+    },
+    "permissions":
+    [
+        "tabs"
+    ]
+
+}
