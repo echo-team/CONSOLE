@@ -1,6 +1,16 @@
 function Core()
 {
     /**
+     * Non-static information properties of the class
+     * @type {Object}
+     * @property {Array} communicatableTabs - tabs with open communicaton link
+     */
+    var state =
+    {
+        communicatableTabs: []
+    };
+
+    /**
      * Array of opened tabs, key is id of CONSOLE tab, content is id of DEFAULT tab
      * @type {Array}
      */
@@ -57,10 +67,10 @@ function Core()
      * Setts event communication with tab
      * @param {Object} tabId - tab to open communicate link
      */
-    function openCommunicateLink(tabId)
+    function openCommunicationLink(tabId)
     {
         chrome.runtime.onMessage.addListener(
-            function(request, sender)
+            (function(request, sender)
             {
                 if (sender.tab.id == tabId)
                 {
@@ -73,7 +83,7 @@ function Core()
                         this.console.onOpened.dispatchEvent();
                     }
                 }
-            }
+            }).bind(this)
         );
     }
 
@@ -119,19 +129,13 @@ function Core()
      */
     this.open = function(tabId)
     {
-        consoleWasOpened = true;
-
-        chrome.tabs.create({url: "chrome-extension://knbngjgglbmhnfhpkkngmeobabckoeho/HTML/MAIN.HTML"}, (function(consoleTab)
+        if (state.communicatableTabs.indexOf(tabId) == -1)
         {
-            var index = opened.push({console: {id: consoleTab.id}, default: {id: tabId}}) - 1;
-            opened[index].default.port = openPort(opened[index], "DEFAULT", "CONSOLE");
-            opened[index].console.port = openPort(opened[index], "CONSOLE", "DEFAULT");
+            openCommunicationLink(tabId);
+            state.communicatableTabs.push(tabId);
+        }
 
-            chrome.tabs.sendMessage(opened[index].default.id, {id: Number.toString(opened[index].console.id), type: "DEFAULT"}, function(response)
-            {
-                //console.log(response.farewell);
-            });
-        }).bind(this));
+        chrome.tabs.sendMessage(tabId, {command: "OPEN"});
     }
 
     /**
@@ -140,17 +144,7 @@ function Core()
      */
     this.close = function(consoleTabId)
     {
-        chrome.tabs.remove(parseInt(consoleTabId));
-
-        for (var counter = 0; counter < opened.length; counter++)
-        {
-            if (opened[counter].console.id == consoleTabId)
-            {
-                break;
-            }
-        }
-
-        opened.splice(counter, 1);
+        chrome.tabs.sendMessage(tabId, {command: "CLOSE"});
     }
 
     chrome.tabs.onActivated.addListener(typeChanged.bind(this));
