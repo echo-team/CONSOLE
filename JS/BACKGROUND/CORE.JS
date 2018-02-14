@@ -32,10 +32,16 @@ function Core()
     var consoleWasOpened = false;
 
     /**
-     * Event of new tab opening
-     * @type {ClassEvent}
+     * Console events
+     * @type {Object}
+     * @property {ClassEvent} onOpened - fires then console opens
+     * @property {ClassEvent} onClosed - fires then console closes
      */
-    this.onTypeChanged = new ClassEvent();
+    this.console =
+    {
+        onOpened: new ClassEvent(),
+        onClosed: new ClassEvent()
+    };
 
     /**
      * Event listener of the onActivated event in chrome.tabs
