@@ -10,7 +10,7 @@
 
     "background":
     {
-        "scripts": ["JS/EVENTS.JS", "JS/CORE.JS", "JS/BUTTON.JS", "JS/BACKGROUND.JS"]
+        "scripts": ["JS/BACKGROUND/EVENTS.JS", "JS/BACKGROUND/CORE.JS", "JS/BACKGROUND/BUTTON.JS", "JS/BACKGROUND/MAIN.JS"]
     },
     "permissions":
     [
