@@ -54,22 +54,27 @@ function Core()
     }
 
     /**
-     * Opens port to connect with CONSOLE tab with DEFAULT one, name of port is id of DEFAULT tab
-     * @param {Object} connection  - object with connected tabs
-     * @param {String} name        - name of port, CONSOLE or DEFAULT
-     * @param {String} destination - name of the tab which is going to get messages, CONSOLE or DEFAULT
-     * @return {Object}            - opened port
+     * Setts event communication with tab
+     * @param {Object} tabId - tab to open communicate link
      */
-    function openPort(connection, name, destination)
+    function openCommunicateLink(tabId)
     {
-        var port = chrome.runtime.connect({name: Number.toString(connection[destination.toLowerCase()].id)});
-        port.onMessage.addListener((function(message)
-        {
-            console.log(message, opened);
-            this.postMessage(message);
-        }).bind(connection[destination.toLowerCase()].port));
-
-        return port;
+        chrome.runtime.onMessage.addListener(
+            function(request, sender)
+            {
+                if (sender.tab.id == tabId)
+                {
+                    if (request.state == false)
+                    {
+                        this.console.onClosed.dispatchEvent();
+                    }
+                    else
+                    {
+                        this.console.onOpened.dispatchEvent();
+                    }
+                }
+            }
+        );
     }
 
     /**
