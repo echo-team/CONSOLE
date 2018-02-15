@@ -6,6 +6,18 @@
 function Button(properties)
 {
     /**
+     * Non-static information properties of class
+     */
+    var state =
+    {
+        tab:
+        {
+            id: null,
+            console: null
+        }
+    }
+
+    /**
      * Changes the main button picture
      * @param {String} type - type of picture to set
      */
@@ -20,13 +32,33 @@ function Button(properties)
      */
     function changeState(event)
     {
-        if (event.console || properties.core.opened.indexOf(tab.tabId) > -1)
+        if (event.console || properties.core.opened.indexOf(event.tabId) > -1)
         {
             changeIcon("OPEN");
         }
         else
         {
             changeIcon("CLOSE");
+        }
+
+        var isConsole = properties.core.opened.indexOf(state.currentTab);
+
+        state.tab.id = event.tabId;
+        state.tab.console = isConsole > -1 ? true : false;
+    }
+
+    /**
+     * Toggles console
+     */
+    function toggleConsole()
+    {
+        if (state.tab.console)
+        {
+            properties.core.open();
+        }
+        else
+        {
+            properties.core.close(state.tab.id);
         }
     }
 

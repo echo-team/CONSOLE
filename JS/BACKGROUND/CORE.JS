@@ -82,11 +82,13 @@ function Core()
                 {
                     if (request.state == false)
                     {
-                        this.console.onClosed.dispatch({console: false});
+                        opened.splice(opened.indexOf(sender.tab.tabId), 1);
+                        this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.tabId});
                     }
                     else
                     {
-                        this.console.onOpened.dispatch({console: true});
+                        opened.push(sender.tab.tabId);
+                        this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.tabId});
                     }
                 }
             }).bind(this)
@@ -142,7 +144,6 @@ function Core()
         }
 
         chrome.tabs.sendMessage(tabId, {command: "OPEN"});
-        opened.push(tabId);
     }
 
     /**
@@ -152,7 +153,6 @@ function Core()
     this.close = function(tabId)
     {
         chrome.tabs.sendMessage(tabId, {command: "CLOSE"});
-        opened.splice(opened.indexOf(tabId), 1);
     }
 
     /**
