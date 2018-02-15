@@ -11,7 +11,7 @@ function Core()
     };
 
     /**
-     * Array of opened tabs, key is id of CONSOLE tab, content is id of DEFAULT tab
+     * Array of tabs with opened console
      * @type {Array}
      */
     var opened = [];
@@ -82,11 +82,11 @@ function Core()
                 {
                     if (request.state == false)
                     {
-                        this.console.onClosed.dispatchEvent();
+                        this.console.onClosed.dispatch({console: false});
                     }
                     else
                     {
-                        this.console.onOpened.dispatchEvent();
+                        this.console.onOpened.dispatch({console: true});
                     }
                 }
             }).bind(this)
@@ -142,16 +142,28 @@ function Core()
         }
 
         chrome.tabs.sendMessage(tabId, {command: "OPEN"});
+        opened.push(tabId);
     }
 
     /**
      * Closes console bound to given tab
-     * @param {Number} consoleTabId - index of console tab
+     * @param {Number} tabId - index of console tab
      */
-    this.close = function(consoleTabId)
+    this.close = function(tabId)
     {
         chrome.tabs.sendMessage(tabId, {command: "CLOSE"});
+        opened.splice(opened.indexOf(tabId), 1);
     }
+
+    /**
+     * Getter for opened array property
+     */
+    Object.defineProperty(this, "opened", {get:
+        (function()
+        {
+            return opened;
+        }).bind(this)
+    });
 
     chrome.tabs.onActivated.addListener(typeChanged.bind(this));
 }
