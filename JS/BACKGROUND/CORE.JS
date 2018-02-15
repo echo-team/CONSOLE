@@ -1,16 +1,6 @@
 function Core()
 {
     /**
-     * Non-static information properties of the class
-     * @type {Object}
-     * @property {Array} communicatableTabs - tabs with open communicaton link
-     */
-    var state =
-    {
-        communicatableTabs: []
-    };
-
-    /**
      * Array of tabs with opened console
      * @type {Array}
      */
@@ -37,43 +27,11 @@ function Core()
     };
 
     /**
-     * Setts event communication with tab
-     * @param {Object} tabId - tab to open communicate link
-     */
-    function openCommunicationLink(tabId)
-    {
-        chrome.runtime.onMessage.addListener(
-            (function(request, sender)
-            {
-                if (sender.tab.id == tabId)
-                {
-                    if (request.state == false)
-                    {
-                        opened.splice(opened.indexOf(sender.tab.tabId), 1);
-                        this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.tabId});
-                    }
-                    else
-                    {
-                        opened.push(sender.tab.tabId);
-                        this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.tabId});
-                    }
-                }
-            }).bind(this)
-        );
-    }
-
-    /**
      * Opens a new console bound to given tab
      * @param {Number} tab - index of tab to which console will be bound
      */
     this.open = function(tabId)
     {
-        if (state.communicatableTabs.indexOf(tabId) == -1)
-        {
-            openCommunicationLink(tabId);
-            state.communicatableTabs.push(tabId);
-        }
-
         chrome.tabs.sendMessage(tabId, {command: "OPEN"});
     }
 
@@ -96,5 +54,19 @@ function Core()
         }).bind(this)
     });
 
-    chrome.tabs.onActivated.addListener(typeChanged.bind(this));
+    chrome.runtime.onMessage.addListener(
+        (function(request, sender)
+        {
+            if (request.console == false)
+            {
+                opened.splice(opened.indexOf(sender.tab.tabId), 1);
+            }
+            else
+            {
+                opened.push(sender.tab.tabId);
+            }
+
+            this.console.onClosed.dispatch({console: request.console, from: "CORE", tabId: sender.tab.tabId});
+        }).bind(this)
+    );
 }
