@@ -1,2 +1,2 @@
 var core = new Core(),
-    button = new Button(core);
+    button = new Button({core: core});

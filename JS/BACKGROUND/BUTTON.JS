@@ -1,68 +1,29 @@
-function Button(core)
+/**
+ * Class of main button
+ * @param {Object}   properties      - settings of class
+ * @param {Function} properties.core - core of the application
+ */
+function Button(properties)
 {
     /**
-    * Type of the tab: "DEFAULT" or "CONSOLE"
-    * @type {String}
-    */
-    var type = null;
-
-    /**
-    * State of the console: 1 if opened, 0 if closed
-    * @type {Number}
-    */
-    var terminal = null;
-
-    /**
-    * ID of the active tab in browser
-    * @type {Number}
-    */
-    var current = null;
-
-    function toggleConsole()
+     * Non-static information properties of class
+     */
+    var state =
     {
-        if (type == "DEFAULT")
+        tab:
         {
-            switch (terminal)
-            {
-                case null:
-
-                    core.open(current);
-                    break;
-
-                default:
-
-                    core.close(terminal);
-                    terminal = null;
-                    break;
-
-            }
-        }
-        else if (type == "CONSOLE")
-        {
-            core.close(current);
+            id: null,
+            console: null
         }
     }
 
     /**
      * Changes the main button picture
+     * @param {String} type - type of picture to set
      */
-    function changeIcon()
+    function changeIcon(type)
     {
-        if (type == "CONSOLE")
-        {
-            chrome.browserAction.setIcon({path: "../IMG/CLOSEACTIVE.PNG"});
-        }
-        else if (type == "DEFAULT")
-        {
-            if (terminal === null)
-            {
-                chrome.browserAction.setIcon({path: "../IMG/OPENNOACTIVE.PNG"});
-            }
-            else
-            {
-                chrome.browserAction.setIcon({path: "../IMG/CLOSENOACTIVE.PNG"});
-            }
-        }
+        chrome.browserAction.setIcon({path: "../IMG/" + type + ".PNG"});
     }
 
     /**
@@ -71,18 +32,38 @@ function Button(core)
      */
     function changeState(event)
     {
-        current = event.target.id;
-        type = event.target.type;
-
-        if (type != "CONSOLE")
+        if (event.console || properties.core.opened.indexOf(event.tabId) > -1)
         {
-            terminal = core.consoleId(event.target.id);
+            changeIcon("OPEN");
+        }
+        else
+        {
+            changeIcon("CLOSE");
         }
 
-        changeIcon();
+        var isConsole = properties.core.opened.indexOf(state.currentTab);
 
+        state.tab.id = event.tabId;
+        state.tab.console = isConsole > -1 ? true : false;
     }
 
-    core.onTypeChanged.addEventListener(changeState.bind(this));
+    /**
+     * Toggles console
+     */
+    function toggleConsole()
+    {
+        if (state.tab.console)
+        {
+            properties.core.open();
+        }
+        else
+        {
+            properties.core.close(state.tab.id);
+        }
+    }
+
+    properties.core.onOpen.addEventListener(changeState.bind(this));
+    properties.core.onClosed.addEventListener(changeState.bind(this));
+    chrome.browserAction.onActivated.addListener(changeState.bind(this));
     chrome.browserAction.onClicked.addListener(toggleConsole.bind(this));
 }
