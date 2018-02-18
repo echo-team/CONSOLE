@@ -41,7 +41,7 @@ function Core()
      */
     this.close = function(tabId)
     {
-        chrome.tabs.sendMessage(tabId, {command: "CLOSE"});
+        chrome.tabs.sendMessage(tabId, {command: "CLOSE"}, function(response){});
     }
 
     /**
@@ -59,14 +59,14 @@ function Core()
         {
             if (request.console == false)
             {
-                opened.splice(opened.indexOf(sender.tab.tabId), 1);
+                opened.splice(opened.indexOf(sender.tab.id), 1);
+                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
             }
             else
             {
-                opened.push(sender.tab.tabId);
+                opened.push(sender.tab.id);
+                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
             }
-
-            this.console.onClosed.dispatch({console: request.console, from: "CORE", tabId: sender.tab.tabId});
         }).bind(this)
     );
 }

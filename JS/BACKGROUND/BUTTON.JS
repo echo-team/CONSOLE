@@ -34,14 +34,14 @@ function Button(properties)
     {
         if (event.console || properties.core.opened.indexOf(event.tabId) > -1)
         {
-            changeIcon("OPEN");
+            changeIcon("CLOSE");
         }
         else
         {
-            changeIcon("CLOSE");
+            changeIcon("OPEN");
         }
 
-        var isConsole = properties.core.opened.indexOf(state.currentTab);
+        var isConsole = properties.core.opened.indexOf(event.tabId);
 
         state.tab.id = event.tabId;
         state.tab.console = isConsole > -1 ? true : false;
@@ -54,16 +54,16 @@ function Button(properties)
     {
         if (state.tab.console)
         {
-            properties.core.open();
+            properties.core.close(state.tab.id);
         }
         else
         {
-            properties.core.close(state.tab.id);
+            properties.core.open(state.tab.id);
         }
     }
 
-    properties.core.onOpen.addEventListener(changeState.bind(this));
-    properties.core.onClosed.addEventListener(changeState.bind(this));
-    chrome.browserAction.onActivated.addListener(changeState.bind(this));
+    properties.core.console.onOpened.addEventListener(changeState.bind(this));
+    properties.core.console.onClosed.addEventListener(changeState.bind(this));
+    chrome.tabs.onActivated.addListener(changeState.bind(this));
     chrome.browserAction.onClicked.addListener(toggleConsole.bind(this));
 }

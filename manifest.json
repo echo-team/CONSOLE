@@ -12,9 +12,15 @@
     {
         "scripts": ["JS/BACKGROUND/EVENTS.JS", "JS/BACKGROUND/CORE.JS", "JS/BACKGROUND/BUTTON.JS", "JS/BACKGROUND/MAIN.JS"]
     },
+    "content_scripts":
+    [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["JS/CONTENT/CONSOLE.JS", "JS/CONTENT/INITIALIZER.JS", "JS/CONTENT/MAIN.JS"]
+        }
+    ],
     "permissions":
     [
         "tabs"
     ]
-
 }
