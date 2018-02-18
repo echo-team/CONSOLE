@@ -22,4 +22,5 @@ function Initializer()
     /**
      * Placing console script to the DOM
      */
+    new Console();
 }
