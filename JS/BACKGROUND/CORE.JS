@@ -69,4 +69,29 @@ function Core()
             }
         }).bind(this)
     );
+
+    chrome.webRequest.onHeadersReceived.addListener(
+        function(info)
+        {
+            var headers = info.responseHeaders;
+            console.log(headers);
+            for (var counter = 0; counter < headers.length; counter++)
+            {
+                var header = headers[counter].name.toLowerCase();
+                if (header == "x-frame-options" || header == "frame-options")
+                {
+                    headers.splice(counter, 1);
+                }
+            }
+
+            //headers.push({name: "Content-Security-Policy", value: "frame-src chrome-extension://klhbjkloifopollfbhkodpjhjfjhjogb/"});
+
+            return {responseHeaders: headers};
+        },
+        {
+            urls: [ "*://*/*" ],
+            types: [ "sub_frame" ]
+        },
+        ['blocking', 'responseHeaders']
+    );
 }

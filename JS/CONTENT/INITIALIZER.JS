@@ -8,12 +8,12 @@ function Initializer()
         {
             if (request.command == "OPEN")
             {
-                console.log("OPENED");
+                console.open();
                 chrome.runtime.sendMessage({console: true});
             }
             else if (request.command == "CLOSE")
             {
-                console.log("CLOSED");
+                console.close();
                 chrome.runtime.sendMessage({console: false});
             }
         }
@@ -22,5 +22,5 @@ function Initializer()
     /**
      * Placing console script to the DOM
      */
-    new Console();
+    var console = new Console();
 }

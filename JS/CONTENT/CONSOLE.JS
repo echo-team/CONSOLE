@@ -18,6 +18,11 @@ function Console()
      */
     var CSS =
     {
+        parent:
+        {
+            console: "CONSOLE__PARENT--CONSOLE",
+            normal: "CONSOLE__PARENT"
+        },
         container: "CONSOLE__CONTAINER",
         page: "CONSOLE__PAGE"
     }
@@ -28,6 +33,8 @@ function Console()
     this.open = function()
     {
         console.log("OPENED");
+
+        DOM.parent.classList.add(CSS.parent.console);
     }
 
     /**
@@ -36,12 +43,19 @@ function Console()
     this.close = function()
     {
         console.log("CLOSED");
+
+        DOM.parent.classList.remove(CSS.parent.console);
     }
 
     /**
      * Creating DOM tree of the class
      */
+    document.body.innerHTML = "";
+
     DOM.parent = document.body;
-    DOM.parent.innerHTML = "";
-    DOM.page = DOM.parent.newChildElement("iframe", {classList: CSS.page, "SRC": window.location.href});
+    DOM.page = DOM.parent.newChildElement("iframe", {classList: CSS.page, src: window.location.href});
+    DOM.parent.classList.add(CSS.parent.normal);
+    DOM.page.classList.add(CSS.page);
+
+    DOM.container = DOM.parent.newChildElement("div", {classList: CSS.container});
 }
