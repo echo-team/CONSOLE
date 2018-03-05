@@ -6,18 +6,6 @@
 function Button(properties)
 {
     /**
-     * Non-static information properties of class
-     */
-    var state =
-    {
-        tab:
-        {
-            id: null,
-            console: null
-        }
-    }
-
-    /**
      * Changes the main button picture
      * @param {String} type - type of picture to set
      */
@@ -27,43 +15,18 @@ function Button(properties)
     }
 
     /**
-     * Changes state of the main button in dependace of the active tab
-     * @param {activeInfo} event - information about the activated tab
+     * Changes state of the button at the browser toolbar
+     * @param {String} console - console status
      */
-    function changeState(event)
+    this.changeState = function(console)
     {
-        if (event.console || properties.core.opened.indexOf(event.tabId) > -1)
+        if (console)
         {
-            changeIcon("CLOSE");
+            changeIcon("OPENED");
         }
         else
         {
-            changeIcon("OPEN");
-        }
-
-        var isConsole = properties.core.opened.indexOf(event.tabId);
-
-        state.tab.id = event.tabId;
-        state.tab.console = isConsole > -1 ? true : false;
-    }
-
-    /**
-     * Toggles console
-     */
-    function toggleConsole()
-    {
-        if (state.tab.console)
-        {
-            properties.core.close(state.tab.id);
-        }
-        else
-        {
-            properties.core.open(state.tab.id);
+            changeIcon("CLOSED");
         }
     }
-
-    properties.core.console.onOpened.addEventListener(changeState.bind(this));
-    properties.core.console.onClosed.addEventListener(changeState.bind(this));
-    chrome.tabs.onActivated.addListener(changeState.bind(this));
-    chrome.browserAction.onClicked.addListener(toggleConsole.bind(this));
 }

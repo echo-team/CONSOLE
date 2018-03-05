@@ -1,4 +1,8 @@
-function Core()
+/**
+ * @param {Object} properties -        settings of the current class
+ * @param {Object} properties.button - class of the button in the browser toolbar
+ */
+function Core(properties)
 {
     /**
      * Array of tabs with opened console
