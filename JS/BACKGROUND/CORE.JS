@@ -79,4 +79,18 @@ function Core(properties)
             }
         }).bind(this)
     );
+
+    chrome.tabs.onActivated(
+        function(event)
+        {
+            if (opened.indexOf(event.tabId) > -1)
+            {
+                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+            }
+            else
+            {
+                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+            }
+        }
+    );
 }
