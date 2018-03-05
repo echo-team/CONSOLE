@@ -36,7 +36,7 @@ function Core(properties)
      */
     this.open = function(tabId)
     {
-        chrome.tabs.sendMessage(tabId, {command: "OPEN"});
+        chrome.tabs.sendMessage(tabId, {type: "CONSOLE_STATE", command: "OPEN"});
     }
 
     /**
@@ -45,7 +45,7 @@ function Core(properties)
      */
     this.close = function(tabId)
     {
-        chrome.tabs.sendMessage(tabId, {command: "CLOSE"}, function(response){});
+        chrome.tabs.sendMessage(tabId, {type: "CONSOLE_STATE", command: "CLOSE"});
     }
 
     /**
@@ -58,18 +58,24 @@ function Core(properties)
         }).bind(this)
     });
 
+    /**
+     * Communication between content scripts and background
+     */
     chrome.runtime.onMessage.addListener(
         (function(request, sender)
         {
-            if (request.console == false)
+            if (request.type == "CONSOLE_STATE")
             {
-                opened.splice(opened.indexOf(sender.tab.id), 1);
-                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
-            }
-            else
-            {
-                opened.push(sender.tab.id);
-                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+                if (request.console == false)
+                {
+                    opened.push(sender.tab.id);
+                    this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+                }
+                else
+                {
+                    opened.splice(opened.indexOf(sender.tab.id), 1);
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+                }
             }
         }).bind(this)
     );
