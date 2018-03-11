@@ -1,9 +1,7 @@
 /**
  * Class of main button
- * @param {Object}   properties      - settings of class
- * @param {Function} properties.core - core of the application
  */
-function Button(properties)
+function Button()
 {
     /**
      * Changes the main button picture
@@ -13,6 +11,18 @@ function Button(properties)
     {
         chrome.browserAction.setIcon({path: "../IMG/" + type + ".PNG"});
     }
+
+    /**
+     * Class event of clicking to the main button
+     */
+    this.onClicked = new ClassEvent();
+
+    chrome.browserAction.onClicked.addListener(
+        (function(tab)
+        {
+            this.onClicked.dispatch({tabId: tab.id});
+        }).bind(this)
+    );
 
     /**
      * Changes state of the button at the browser toolbar

@@ -1,36 +1,29 @@
 var core = new Core(),
-    button = new Button({core: core}),
-    plugins = new Plugins({parent: document.head});
+    button = new Button();
 
 
 /**
  * Button initialization
  */
 
-core.console.onOpened(
+core.console.onOpened.addEventListener(
     function()
     {
         button.changeState(true);
     }
 );
 
-core.console.onClosed(
+core.console.onClosed.addEventListener(
     function()
     {
         button.changeState(false);
     }
 );
 
-
-/**
- * Plugins initialization
- */
-
-let plug =
-    [
-        {
-            background: null,
-            content: null,
-            page: null
-        }
-    ];
+button.onClicked.addEventListener(
+    function(event)
+    {
+        core.toggleConsole(event.tabId);
+        console.log("TOGGLED: " + event.tabId);
+    }
+);
