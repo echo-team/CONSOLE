@@ -1,4 +1,8 @@
-function Core()
+/**
+ * @param {Object} properties -        settings of the current class
+ * @param {Object} properties.button - class of the button in the browser toolbar
+ */
+function Core(properties)
 {
     /**
      * Array of tabs with opened console
@@ -30,18 +34,34 @@ function Core()
      * Opens a new console bound to given tab
      * @param {Number} tab - index of tab to which console will be bound
      */
-    this.open = function(tabId)
+    this.sendOpenSignal = function(tabId)
     {
-        chrome.tabs.sendMessage(tabId, {command: "OPEN"});
+        chrome.tabs.sendMessage(tabId, {type: "CONSOLE_STATE", command: "OPEN"});
     }
 
     /**
      * Closes console bound to given tab
      * @param {Number} tabId - index of console tab
      */
-    this.close = function(tabId)
+    this.sendCloseSignal = function(tabId)
     {
-        chrome.tabs.sendMessage(tabId, {command: "CLOSE"}, function(response){});
+        chrome.tabs.sendMessage(tabId, {type: "CONSOLE_STATE", command: "CLOSE"});
+    }
+
+    /**
+     * Toggles console
+     * @param {Number} tabId - index of tab to toggle console
+     */
+    this.toggleConsole = function(tabId)
+    {
+        if (opened.indexOf(tabId)== -1)
+        {
+            this.sendOpenSignal(tabId);
+        }
+        else
+        {
+            this.sendCloseSignal(tabId);
+        }
     }
 
     /**
@@ -54,18 +74,40 @@ function Core()
         }).bind(this)
     });
 
+    /**
+     * Communication between content scripts and background
+     */
     chrome.runtime.onMessage.addListener(
         (function(request, sender)
         {
-            if (request.console == false)
+            if (request.type == "CONSOLE_STATE")
             {
-                opened.splice(opened.indexOf(sender.tab.id), 1);
-                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+                if (request.console)
+                {
+                    opened.push(sender.tab.id);
+                    this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+                }
+                else
+                {
+                    opened.splice(opened.indexOf(sender.tab.id), 1);
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+                }
+
+                console.log(opened);
+            }
+        }).bind(this)
+    );
+
+    chrome.tabs.onActivated.addListener(
+        (function(event)
+        {
+            if (opened.indexOf(event.tabId) > -1)
+            {
+                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: event.tabId});
             }
             else
             {
-                opened.push(sender.tab.id);
-                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: event.tabId});
             }
         }).bind(this)
     );
