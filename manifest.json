@@ -16,7 +16,7 @@
     [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["JS/CONTENT/CONSOLE.JS", "JS/CONTENT/INITIALIZER.JS", "JS/CONTENT/MAIN.JS"]
+            "js": ["JS/CONTENT/CONSOLE.JS", "JS/CONTENT/MAIN.JS"]
         }
     ],
     "permissions":
