@@ -62,11 +62,10 @@ function Console()
     document.body.innerHTML = "";
 
     DOM.parent = document.body;
+    DOM.container = DOM.parent.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
     DOM.page = DOM.parent.newChildElement("iframe", {classList: CSS.page, src: window.location.href});
     DOM.parent.classList.add(CSS.parent.normal);
     DOM.page.classList.add(CSS.page);
-
-    DOM.container = DOM.parent.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
 
     /**
      * Creating interface and the main tab

@@ -2,6 +2,7 @@
 {
     DISPLAY: FLEX;
     FLEX-DIRECTION: ROW;
+    LEFT: 50%;
     WIDTH: 100%;
     HEIGHT: 100%;
 }
@@ -10,7 +11,6 @@
 {
     DISPLAY: FLEX;
     POSITION: RELATIVE;
-    LEFT: 0%;
     MIN-WIDTH: 100%;
     WIDTH: 100%;
     HEIGHT: 100%;
@@ -20,10 +20,14 @@
 
 .CONSOLE__PARENT--CONSOLE .CONSOLE__PAGE
 {
-    LEFT: 50%;
     MAX-WIDTH: 50%;
     MIN-WIDTH: 50%;
     WIDTH: 50%;
+}
+
+.CONSOLE__PARENT--CONSOLE
+{
+    LEFT: 50%;
 }
 
 .CONSOLE__CONTAINER
@@ -32,7 +36,6 @@
     POSITION: RELATIVE;
     WIDTH: 50%;
     HEIGHT: 100%;
-    LEFT: -50%;
     BORDER: NONE;
     TRANSITION: LEFT 1S;
 }
