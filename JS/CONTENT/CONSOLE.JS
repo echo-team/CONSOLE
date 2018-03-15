@@ -66,7 +66,7 @@ function Console()
     DOM.parent.classList.add(CSS.parent.normal);
     DOM.page.classList.add(CSS.page);
 
-    DOM.container = DOM.parent.newChildElement("div", {classList: CSS.container});
+    DOM.container = DOM.parent.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
 
     /**
      * Creating interface and the main tab
