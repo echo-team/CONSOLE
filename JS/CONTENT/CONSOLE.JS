@@ -7,25 +7,34 @@ function Console()
      * DOM tree of the class
      */
     var DOM =
-    {
-        parent: null,
-        container: null,
-        page: null
-    }
+        {
+            parent: null,
+            container: null,
+            page: null,
+            tabs:
+            {
+                main: null
+            }
+        }
 
     /**
      * CSS styles of the class
      */
     var CSS =
-    {
-        parent:
         {
-            console: "CONSOLE__PARENT--CONSOLE",
-            normal: "CONSOLE__PARENT"
-        },
-        container: "CONSOLE__CONTAINER",
-        page: "CONSOLE__PAGE"
-    }
+            parent:
+            {
+                console: "CONSOLE__PARENT--CONSOLE",
+                normal: "CONSOLE__PARENT"
+            },
+            container: "CONSOLE__CONTAINER",
+            page: "CONSOLE__PAGE"
+        }
+
+    /**
+     * Tabed interface
+     */
+    var interface;
 
     /**
      * Opens console
@@ -58,6 +67,13 @@ function Console()
     DOM.page.classList.add(CSS.page);
 
     DOM.container = DOM.parent.newChildElement("div", {classList: CSS.container});
+
+    /**
+     * Creating interface and the main tab
+     */
+    interface = new Interface(DOM.container);
+
+    DOM.tabs.main = interface.createTab("MAIN");
 
     /**
      * Setting messaging manager
