@@ -17,7 +17,7 @@
         {
             "matches": ["http://*/*", "https://*/*"],
             "css": ["CSS/CONTENT/RISE.MIN.CSS", "CSS/CONTENT/CONSOLE.CSS"],
-            "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/INITIALIZER.JS", "JS/CONTENT/MAIN.JS"]
+            "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/MAIN.JS"]
         }
     ],
     "permissions": ["tabs", "webRequest", "webRequestBlocking", "*://*/*"]

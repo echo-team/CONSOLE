@@ -1,1 +1,1 @@
-new Initializer();
+new Console();
