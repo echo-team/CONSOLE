@@ -32,7 +32,7 @@ function Console()
      */
     this.open = function()
     {
-        console.log("OPENED");
+        console.log("1 OPENED");
 
         DOM.parent.classList.add(CSS.parent.console);
     }
@@ -59,8 +59,11 @@ function Console()
 
     DOM.container = DOM.parent.newChildElement("div", {classList: CSS.container});
 
+    /**
+     * Setting messaging manager
+     */
     chrome.runtime.onMessage.addListener(
-        function (request, sender)
+        (function (request, sender)
         {
             if (request.type == "CONSOLE_STATE")
             {
@@ -68,13 +71,15 @@ function Console()
                 {
                     console.log("OPENED");
                     chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
+                    this.open();
                 }
                 else if (request.command == "CLOSE")
                 {
                     console.log("CLOSED");
                     chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: false});
+                    this.close();
                 }
             }
-        }
+        }).bind(this)
     );
 }
