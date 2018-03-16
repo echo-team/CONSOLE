@@ -9,6 +9,7 @@ function Console()
     var DOM =
         {
             parent: null,
+            wrap: null,
             container: null,
             page: null,
             tabs:
@@ -22,13 +23,24 @@ function Console()
      */
     var CSS =
         {
-            parent:
+            wrap:
             {
-                console: "CONSOLE__PARENT--CONSOLE",
-                normal: "CONSOLE__PARENT"
+                console: "CONSOLE__WRAP--CONSOLE",
+                top: "CONSOLE__WRAP--TOP",
+                bottom: "CONSOLE__WRAP--BOTTOM",
+                left: "CONSOLE__WRAP--LEFT",
+                right: "CONSOLE__WRAP--RIGHT",
+                common: "CONSOLE__WRAP"
             },
             container: "CONSOLE__CONTAINER",
-            page: "CONSOLE__PAGE"
+            page:
+            {
+                top: "CONSOLE__PAGE--TOP",
+                bottom: "CONSOLE__PAGE--BOTTOM",
+                left: "CONSOLE__PAGE--LEFT",
+                right: "CONSOLE__PAGE--RIGHT",
+                common: "CONSOLE__PAGE"
+            }
         }
 
     /**
@@ -37,13 +49,25 @@ function Console()
     var interface;
 
     /**
+     * Sets position of the console
+     * @param {String} position - position of the console: top, bottom, left or right
+     */
+    function setConsolePosition(position)
+    {
+        position = position.toLowerCase();
+
+        DOM.wrap.classList.add(CSS.wrap[position]);
+        DOM.page.classList.add(CSS.page[position]);
+    }
+
+    /**
      * Opens console
      */
     this.open = function()
     {
-        console.log("1 OPENED");
+        console.log("OPENED");
 
-        DOM.parent.classList.add(CSS.parent.console);
+        DOM.wrap.classList.add(CSS.wrap.console);
     }
 
     /**
@@ -53,7 +77,7 @@ function Console()
     {
         console.log("CLOSED");
 
-        DOM.parent.classList.remove(CSS.parent.console);
+        DOM.wrap.classList.remove(CSS.wrap.console);
     }
 
     /**
@@ -62,10 +86,11 @@ function Console()
     document.body.innerHTML = "";
 
     DOM.parent = document.body;
-    DOM.container = DOM.parent.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
-    DOM.page = DOM.parent.newChildElement("iframe", {classList: CSS.page, src: window.location.href});
-    DOM.parent.classList.add(CSS.parent.normal);
-    DOM.page.classList.add(CSS.page);
+    DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
+    DOM.container = DOM.wrap.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
+    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: window.location.href});
+
+    setConsolePosition("TOP");
 
     /**
      * Creating interface and the main tab
@@ -84,13 +109,11 @@ function Console()
             {
                 if (request.command == "OPEN")
                 {
-                    console.log("OPENED");
                     chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
                     this.open();
                 }
                 else if (request.command == "CLOSE")
                 {
-                    console.log("CLOSED");
                     chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: false});
                     this.close();
                 }
