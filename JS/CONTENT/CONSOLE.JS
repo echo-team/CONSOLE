@@ -90,14 +90,15 @@ function Console()
     DOM.container = DOM.wrap.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
     DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: window.location.href});
 
-    setConsolePosition("TOP");
+    setConsolePosition("LEFT");
+
 
     /**
      * Creating interface and the main tab
      */
-    interface = new Interface(DOM.container);
+    interface = new Interface({parent: DOM.container});
+    interface.load.aside.portrait();
 
-    DOM.tabs.main = interface.createTab("MAIN");
 
     /**
      * Setting messaging manager
