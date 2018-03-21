@@ -98,6 +98,7 @@ function Console()
      */
     interface = new Interface({parent: DOM.container});
     interface.load.aside.portrait();
+    interface.newSection("Test");
 
 
     /**
