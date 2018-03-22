@@ -23,14 +23,27 @@ function Interface(properties)
      */
     var CSS =
         {
-            aside:
+            header: "INTERFACE__HEADER",
+            divider: "INTERFACE__DIVIDER",
+            presets:
             {
-                portrait:
+                aside:
                 {
-                    container: "INTERFACE__CONTAINER--ASIDE-PORTRAIT",
-                    menu: "INTERFACE__MENU--ASIDE-PORTRAIT",
-                    tabsContainer: "INTERFACE__TABSCONTAINER--ASIDE-PORTRAIT"
+                    portrait:
+                    {
+                        container: "INTERFACE__CONTAINER--ASIDE-PORTRAIT",
+                        menu: "INTERFACE__MENU--ASIDE-PORTRAIT",
+                        tabsContainer: "INTERFACE__TABSCONTAINER--ASIDE-PORTRAIT"
+                    }
                 }
+            },
+            theme:
+            {
+                container: "THEME__CONTAINER",
+                header: "THEME__HEADER",
+                menu: "THEME__MENU",
+                group: "THEME__DIVIDER",
+                section: "THEME__SECTION"
             }
         }
 
@@ -61,9 +74,9 @@ function Interface(properties)
             DOM.riseMenu.appendChild(DOM.menu);
             rise.showTab("MENU");
 
-            DOM.container.classList.add(CSS.aside.portrait.container);
-            DOM.menu.classList.add(CSS.aside.portrait.menu);
-            DOM.tabsContainer.classList.add(CSS.aside.portrait.tabsContainer);
+            DOM.container.classList.add(CSS.presets.aside.portrait.container);
+            DOM.menu.classList.add(CSS.presets.aside.portrait.menu);
+            DOM.tabsContainer.classList.add(CSS.presets.aside.portrait.tabsContainer);
 
             state.preset = "aside";
             state.orientation = "portrait";
@@ -92,7 +105,7 @@ function Interface(properties)
         var index = DOM.tabs.push(rise.createTab(name)) - 1,
             tab;
 
-        DOM.menu.newChildElement("div", {classList: "THEME__SECTION", eventListeners: {click:
+        DOM.menu.newChildElement("div", {classList: CSS.theme.section, eventListeners: {click:
             (function()
             {
                 rise.showTab(name);
@@ -125,12 +138,12 @@ function Interface(properties)
      */
     DOM.parent = properties.parent;
     DOM.container = DOM.parent.newChildElement("div");
-    DOM.menu = DOM.container.newChildElement("div", {classList: "THEME__MENU"});
+    DOM.menu = DOM.container.newChildElement("div", {classList: CSS.theme.menu});
     DOM.tabsContainer = DOM.container.newChildElement("div");
 
     rise = new Rise(DOM.tabsContainer);
     DOM.riseMenu = rise.createTab("MENU");
-    DOM.riseMenu.newChildElement("h1", {classList: ["INTERFACE__HEADER", "THEME__HEADER"]}, "Главная");
+    DOM.riseMenu.newChildElement("h1", {classList: [CSS.header, CSS.theme.header]}, "Главная");
 
-    DOM.menu.newChildElement("div", {classList: ["INTERFACE__GROUP", "THEME__GROUP"]}, "Инструменты");
+    DOM.menu.newChildElement("div", {classList: [CSS.divider, CSS.theme.group]}, "Инструменты");
 }
