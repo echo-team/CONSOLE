@@ -14,6 +14,7 @@ function Interface(properties)
             container: null,
             riseMenu: null,
             menu: null,
+            groups: {},
             tabsContainer: null,
             tabs: []
         }
@@ -42,7 +43,7 @@ function Interface(properties)
                 container: "THEME__CONTAINER",
                 header: "THEME__HEADER",
                 menu: "THEME__MENU",
-                group: "THEME__DIVIDER",
+                divider: "THEME__DIVIDER",
                 section: "THEME__SECTION"
             }
         }
@@ -97,13 +98,28 @@ function Interface(properties)
 
     /**
      * Creates a new static tab
-     * @param  {String} name - name of creating tab
-     * @return {Element}     - link to the tab workspace
+     * @param  {String} name  - name of the group in menu
+     * @param  {String} group - name of creating tab
+     * @return {Element}      - link to the tab workspace
      */
-    this.newSection = function(name)
+    this.newSection = function(name, group)
     {
         var index = DOM.tabs.push(rise.createTab(name)) - 1,
-            tab;
+            tab, groupElement;
+
+        for (var existingGroup in DOM.groups)
+        {
+            if (group == existingGroup)
+            {
+                groupElement = DOM.groups[existingGroup];
+                return;
+            }
+        }
+
+        if (!groupElement)
+        {
+            DOM.groups[group] = DOM.menu.newChildElement("div", {classList: [CSS.theme.divider, CSS.divider]}, group);
+        }
 
         DOM.menu.newChildElement("div", {classList: CSS.theme.section, eventListeners: {click:
             (function()
@@ -137,6 +153,7 @@ function Interface(properties)
      * Creating DOM of the class
      */
     DOM.parent = properties.parent;
+    DOM.parent.setCSS(CSS.theme.container);
     DOM.container = DOM.parent.newChildElement("div");
     DOM.menu = DOM.container.newChildElement("div", {classList: CSS.theme.menu});
     DOM.tabsContainer = DOM.container.newChildElement("div");
@@ -144,6 +161,4 @@ function Interface(properties)
     rise = new Rise(DOM.tabsContainer);
     DOM.riseMenu = rise.createTab("MENU");
     DOM.riseMenu.newChildElement("h1", {classList: [CSS.header, CSS.theme.header]}, "Главная");
-
-    DOM.menu.newChildElement("div", {classList: [CSS.divider, CSS.theme.group]}, "Инструменты");
 }

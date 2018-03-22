@@ -87,7 +87,7 @@ function Console()
 
     DOM.parent = document.body;
     DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
-    DOM.container = DOM.wrap.newChildElement("div", {classList: [CSS.container, "THEME__CONTAINER"]});
+    DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
     DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: window.location.href});
 
     setConsolePosition("LEFT");
@@ -98,7 +98,7 @@ function Console()
      */
     interface = new Interface({parent: DOM.container});
     interface.load.aside.portrait();
-    interface.newSection("Test");
+    interface.newSection("Проверка", "Инструменты");
 
 
     /**
