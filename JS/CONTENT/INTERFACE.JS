@@ -92,7 +92,7 @@ function Interface(properties)
         var index = DOM.tabs.push(rise.createTab(name)) - 1,
             tab;
 
-        DOM.menu.newChildElement("div", {eventListeners: {click:
+        DOM.menu.newChildElement("div", {classList: "THEME__SECTION", eventListeners: {click:
             (function()
             {
                 rise.showTab(name);
@@ -125,9 +125,12 @@ function Interface(properties)
      */
     DOM.parent = properties.parent;
     DOM.container = DOM.parent.newChildElement("div");
-    DOM.menu = DOM.container.newChildElement("div");
+    DOM.menu = DOM.container.newChildElement("div", {classList: "THEME__MENU"});
     DOM.tabsContainer = DOM.container.newChildElement("div");
 
     rise = new Rise(DOM.tabsContainer);
     DOM.riseMenu = rise.createTab("MENU");
+    DOM.riseMenu.newChildElement("h1", {classList: ["INTERFACE__HEADER", "THEME__HEADER"]}, "Главная");
+
+    DOM.menu.newChildElement("div", {classList: ["INTERFACE__GROUP", "THEME__GROUP"]}, "Инструменты");
 }
