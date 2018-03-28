@@ -35,6 +35,12 @@ function Interface(properties)
                         container: "INTERFACE__CONTAINER--ASIDE-PORTRAIT",
                         menu: "INTERFACE__MENU--ASIDE-PORTRAIT",
                         tabsContainer: "INTERFACE__TABSCONTAINER--ASIDE-PORTRAIT"
+                    },
+                    album:
+                    {
+                        container: "INTERFACE__CONTAINER--ASIDE-ALBUM",
+                        menu: "INTERFACE__MENU--ASIDE-ALBUM",
+                        tabsContainer: "INTERFACE__TABSCONTAINER--ASIDE-ALBUM"
                     }
                 }
             },
