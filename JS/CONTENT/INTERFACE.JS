@@ -90,7 +90,11 @@ function Interface(properties)
         },
         album: function()
         {
+            DOM.container.appendChild(DOM.menu);
 
+            DOM.container.classList.add(CSS.presets.aside.album.container);
+            DOM.menu.classList.add(CSS.presets.aside.album.menu);
+            DOM.tabsContainer.classList.add(CSS.presets.aside.album.tabsContainer);
         }
     }
 

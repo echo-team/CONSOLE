@@ -90,14 +90,14 @@ function Console()
     DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
     DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: window.location.href});
 
-    setConsolePosition("LEFT");
+    setConsolePosition("BOTTOM");
 
 
     /**
      * Creating interface and the main tab
      */
     interface = new Interface({parent: DOM.container});
-    interface.load.aside.portrait();
+    interface.load.aside.album();
     interface.newSection("Проверка", "Инструменты");
 
 
