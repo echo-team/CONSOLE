@@ -49,6 +49,7 @@ function Interface(properties)
             {
                 container: "THEME__CONTAINER",
                 header: "THEME__HEADER",
+                tabWorkspace: "THEME__TABWORKSPACE",
                 menu: "THEME__MENU",
                 divider: "THEME__DIVIDER",
                 group: "THEME__GROUP",
@@ -137,7 +138,7 @@ function Interface(properties)
                 rise.showTab("MENU");
             }).bind(this)}}, name);
 
-        tab = DOM.tabs[index].newChildElement("div");
+        tab = DOM.tabs[index].newChildElement("div", {classList: CSS.theme.tabWorkspace});
 
         return tab;
     }
