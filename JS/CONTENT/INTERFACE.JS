@@ -131,7 +131,7 @@ function Interface(properties)
                 rise.showTab(name);
             }).bind(this)}}, name);
 
-        DOM.tabs[index].newChildElement("h1", {eventListeners: {click:
+        DOM.tabs[index].newChildElement("h1", {classList: [CSS.theme.header, CSS.header], eventListeners: {click:
             (function()
             {
                 rise.showTab("MENU");
