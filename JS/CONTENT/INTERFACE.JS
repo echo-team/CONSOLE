@@ -26,6 +26,7 @@ function Interface(properties)
         {
             header: "INTERFACE__HEADER",
             divider: "INTERFACE__DIVIDER",
+            group: "INREFACE__GROUP",
             presets:
             {
                 aside:
@@ -50,6 +51,7 @@ function Interface(properties)
                 header: "THEME__HEADER",
                 menu: "THEME__MENU",
                 divider: "THEME__DIVIDER",
+                group: "THEME__GROUP",
                 section: "THEME__SECTION"
             }
         }
@@ -108,30 +110,22 @@ function Interface(properties)
 
     /**
      * Creates a new static tab
-     * @param  {String} name  - name of the group in menu
-     * @param  {String} group - name of creating tab
-     * @return {Element}      - link to the tab workspace
+     * @param  {String} name      - name of creating tab
+     * @param  {String} groupName - name of the group in menu
+     * @return {Element}          - link to the tab workspace
      */
-    this.newSection = function(name, group)
+    this.newSection = function(name, groupName)
     {
         var index = DOM.tabs.push(rise.createTab(name)) - 1,
-            tab, groupElement;
+            tab;
 
-        for (var existingGroup in DOM.groups)
+        if (!DOM.groups[groupName])
         {
-            if (group == existingGroup)
-            {
-                groupElement = DOM.groups[existingGroup];
-                return;
-            }
+            DOM.groups[groupName] = DOM.menu.newChildElement("div", {classList: [CSS.theme.group, CSS.group]});
+            DOM.groups[groupName].newChildElement("div", {classList: [CSS.theme.divider, CSS.divider]}, groupName);
         }
 
-        if (!groupElement)
-        {
-            DOM.groups[group] = DOM.menu.newChildElement("div", {classList: [CSS.theme.divider, CSS.divider]}, group);
-        }
-
-        DOM.menu.newChildElement("div", {classList: CSS.theme.section, eventListeners: {click:
+        DOM.groups[groupName].newChildElement("div", {classList: CSS.theme.section, eventListeners: {click:
             (function()
             {
                 rise.showTab(name);
