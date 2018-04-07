@@ -15,12 +15,10 @@
     "content_scripts":
     [
         {
-            "matches": ["http://*/*", "https://*/*"],
-            "js": ["JS/CONTENT/CONSOLE.JS", "JS/CONTENT/MAIN.JS"]
+            "matches": ["http://*/*", "https://*/*", "file:///*"],
+            "css": ["CSS/CONTENT/RISE.MIN.CSS", "CSS/CONTENT/THEMES/NEWSPAPER.CSS", "CSS/CONTENT/INTERFACE.CSS", "CSS/CONTENT/CONSOLE.CSS"],
+            "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/INTERFACE.JS", "JS/CONTENT/MAIN.JS"]
         }
     ],
-    "permissions":
-    [
-        "tabs"
-    ]
+    "permissions": ["tabs", "webRequest", "webRequestBlocking", "*://*/*"]
 }
