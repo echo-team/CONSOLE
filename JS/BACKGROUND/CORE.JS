@@ -5,6 +5,12 @@
 function Core(properties)
 {
     /**
+     * Constant with URL to ghost page
+     * @type {String}
+     */
+    var EXTENSION_GHOSTPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/GHOST.HTML";
+
+    /**
      * Array of tabs with opened console
      * @type {Array}
      */
@@ -47,6 +53,10 @@ function Core(properties)
     {
         chrome.tabs.sendMessage(tabId, {type: "CONSOLE_STATE", command: "CLOSE"});
     }
+
+    /**
+     * Sends signal to init
+     */
 
     /**
      * Toggles console
@@ -135,5 +145,15 @@ function Core(properties)
             types: [ "sub_frame" ]
         },
         ['blocking', 'responseHeaders']
+    );
+
+    chrome.webNavigation.onBeforeNavigate.addListener(
+        function(event)
+        {
+            if (event.url != EXTENSION_GHOSTPAGE)
+            {
+                chrome.tabs.create({url: EXTENSION_GHOSTPAGE}, function(){});
+            }
+        }
     );
 }
