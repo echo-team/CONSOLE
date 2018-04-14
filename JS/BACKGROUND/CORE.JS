@@ -152,7 +152,8 @@ function Core(properties)
         {
             if (event.url != EXTENSION_GHOSTPAGE)
             {
-                chrome.tabs.create({url: EXTENSION_GHOSTPAGE}, function(){});
+                chrome.tabs.remove(event.tabId);
+                chrome.tabs.create({url: EXTENSION_GHOSTPAGE});
             }
         }
     );
