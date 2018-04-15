@@ -1,7 +1,9 @@
 /**
  * Console class inserting to a page
+ * @param {Object} properties     - settings of the class
+ * @param {String} properties.URL - URL link of the target page to monitor with console
  */
-function Console()
+function Console(properties)
 {
     /**
      * DOM tree of the class
@@ -83,12 +85,10 @@ function Console()
     /**
      * Creating DOM tree of the class
      */
-    document.body.innerHTML = "";
-
     DOM.parent = document.body;
     DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
     DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
-    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: window.location.href});
+    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
 
     setConsolePosition("LEFT");
 

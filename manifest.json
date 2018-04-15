@@ -16,10 +16,10 @@
     [
         {
             "run_at": "document_start",
-            "matches": ["http://*/*", "https://*/*", "file:///*"],
-            "css": ["CSS/CONTENT/RISE.MIN.CSS", "CSS/CONTENT/THEMES/NEWSPAPER.CSS", "CSS/CONTENT/INTERFACE.CSS", "CSS/CONTENT/CONSOLE.CSS"],
-            "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/INTERFACE.JS", "JS/CONTENT/MAIN.JS"]
+            "matches": ["<all_urls>"],
+            "js": ["JS/CONTENT/MAIN.JS"]
         }
     ],
-    "permissions": ["tabs", "webNavigation", "webRequest", "webRequestBlocking", "*://*/*"]
+    "permissions": ["tabs", "webNavigation", "webRequest", "webRequestBlocking", "*://*/*"],
+    "web_accessible_resources": ["HTML/GHOST.HTML"]
 }

@@ -55,10 +55,6 @@ function Core(properties)
     }
 
     /**
-     * Sends signal to init
-     */
-
-    /**
      * Toggles console
      * @param {Number} tabId - index of tab to toggle console
      */
@@ -145,16 +141,5 @@ function Core(properties)
             types: [ "sub_frame" ]
         },
         ['blocking', 'responseHeaders']
-    );
-
-    chrome.webNavigation.onBeforeNavigate.addListener(
-        function(event)
-        {
-            if (event.url != EXTENSION_GHOSTPAGE)
-            {
-                chrome.tabs.remove(event.tabId);
-                chrome.tabs.create({url: EXTENSION_GHOSTPAGE});
-            }
-        }
     );
 }
