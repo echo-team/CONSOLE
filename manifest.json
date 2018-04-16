@@ -17,7 +17,8 @@
         {
             "run_at": "document_start",
             "matches": ["<all_urls>"],
-            "js": ["JS/CONTENT/MAIN.JS"]
+            "css": ["CSS/CONTENT/COMMON.CSS", "CSS/CONTENT/RISE.MIN.CSS", "CSS/CONTENT/THEMES/NEWSPAPER.CSS", "CSS/CONTENT/INTERFACE.CSS", "CSS/CONTENT/CONSOLE.CSS"],
+            "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/INTERFACE.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/MAIN.JS"]
         }
     ],
     "permissions": ["tabs", "webNavigation", "webRequest", "webRequestBlocking", "*://*/*"],

@@ -109,7 +109,7 @@ function Console(properties)
      * Setting messaging manager
      */
     chrome.runtime.onMessage.addListener(
-        (function (request, sender)
+        (function (request)
         {
             if (request.type == "CONSOLE_STATE")
             {
