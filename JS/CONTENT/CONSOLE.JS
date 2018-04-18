@@ -62,15 +62,52 @@ function Console(properties)
         DOM.page.classList.add(CSS.page[position]);
     }
 
+    function setTitleListener()
+    {
+        var title = DOM.page.contentDocument.head.querySelector("title");
+        document.title = title.innerHTML;
+
+        var titleListener = new MutationObserver(
+            (function(mutations)
+            {
+                document.title = title.innerHTML;
+                console.log(mutations);
+            }).bind(this)
+        );
+
+        titleListener.observe(title, {characterData: true, childList: true, subtree: true});
+        console.log(title);
+    }
+
     /**
      * Sets current tab name from iframe page name
      */
     function setTabName()
     {
-        if (DOM.page)
+
+        if (!DOM.page.contentDocument.title)
         {
-            console.log(DOM.page.contentWindow.document.title);
-            document.title = DOM.page.contentWindow.document.title;
+            var titleWaiter = new MutationObserver(
+                (function(mutations)
+                {
+                    mutations.forEach(
+                        (function(mutation)
+                        {
+                            if (mutation.addedNodes.tagName == "TITLE")
+                            {
+                                titleWaiter.disconnect();
+                                setTitleListener();
+                            }
+                        }).bind(this)
+                    );
+                }).bind(this)
+            );
+
+            titleWaiter.observe(DOM.page.contentDocument.head, {childList: true, subtree: true});
+        }
+        else
+        {
+            setTitleListener();
         }
     }
 
@@ -100,7 +137,18 @@ function Console(properties)
     DOM.parent = document.body;
     DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
     DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
-    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL, eventListeners: {load: (setTabName).bind(this)}});
+    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
+
+    var iframeLoadingInterval = setInterval(
+        (function()
+        {
+            if (DOM.page.contentWindow.location.href != "about:blank" && DOM.page.contentDocument.head)
+            {
+                clearInterval(iframeLoadingInterval);
+                setTabName();
+            }
+        }).bind(this), 100
+    );
 
     setConsolePosition("LEFT");
 
