@@ -32,6 +32,5 @@ button.onClicked.addEventListener(
     function(event)
     {
         core.toggleConsole(event.tabId);
-        console.log("TOGGLED: " + event.tabId);
     }
 );

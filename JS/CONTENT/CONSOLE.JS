@@ -124,6 +124,10 @@ function Console(properties)
                     this.close();
                 }
             }
+            else if (request.type == "CONSOLE_REINIT")
+            {
+                window.location.href = request.URL;
+            }
         }).bind(this)
     );
 }

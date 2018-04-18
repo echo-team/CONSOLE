@@ -11,6 +11,12 @@ function Core(properties)
     var EXTENSION_GHOSTPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/GHOST.HTML";
 
     /**
+     * Object with tabs which iframes were not loaded yet
+     * @type {Object}
+     */
+    var initQueue = {};event
+
+    /**
      * Array of tabs with opened console
      * @type {Array}
      */
@@ -55,12 +61,22 @@ function Core(properties)
     }
 
     /**
+     * Sends command to reload console with another new target URL
+     * @param {Number} tabId - index of console tab
+     * @param {String} URL   - URL of target page
+     */
+    this.sendReinitSignal = function(tabId, URL)
+    {
+        chrome.tabs.sendMessage(tabId, {type: "CONSOLE_REINIT", URL: URL});
+    }
+
+    /**
      * Toggles console
      * @param {Number} tabId - index of tab to toggle console
      */
     this.toggleConsole = function(tabId)
     {
-        if (opened.indexOf(tabId)== -1)
+        if (opened.indexOf(tabId) == -1)
         {
             this.sendOpenSignal(tabId);
         }
@@ -98,8 +114,6 @@ function Core(properties)
                     opened.splice(opened.indexOf(sender.tab.id), 1);
                     this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
                 }
-
-                console.log(opened);
             }
         }).bind(this)
     );
@@ -122,7 +136,7 @@ function Core(properties)
         function(info)
         {
             var headers = info.responseHeaders;
-            console.log(headers);
+
             for (var counter = 0; counter < headers.length; counter++)
             {
                 var header = headers[counter].name.toLowerCase();
@@ -141,5 +155,23 @@ function Core(properties)
             types: [ "sub_frame" ]
         },
         ['blocking', 'responseHeaders']
+    );
+
+    chrome.webNavigation.onBeforeNavigate.addListener(
+        (function(event)
+        {
+            if (event.parentFrameId == 0)
+            {
+                chrome.webNavigation.getFrame({tabId: event.tabId, frameId: 0},
+                    (function(mainFrame)
+                    {
+                        if (mainFrame.url != event.url)
+                        {
+                            this.sendReinitSignal(event.tabId, event.url);
+                        }
+                    }).bind(this)
+                );
+            }
+        }).bind(this)
     );
 }
