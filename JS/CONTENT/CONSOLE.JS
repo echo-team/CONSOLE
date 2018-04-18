@@ -63,6 +63,18 @@ function Console(properties)
     }
 
     /**
+     * Sets current tab name from iframe page name
+     */
+    function setTabName()
+    {
+        if (DOM.page)
+        {
+            console.log(DOM.page.contentWindow.document.title);
+            document.title = DOM.page.contentWindow.document.title;
+        }
+    }
+
+    /**
      * Opens console
      */
     this.open = function()
@@ -88,7 +100,7 @@ function Console(properties)
     DOM.parent = document.body;
     DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
     DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
-    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
+    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL, eventListeners: {load: (setTabName).bind(this)}});
 
     setConsolePosition("LEFT");
 
