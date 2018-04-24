@@ -1,21 +1,29 @@
 function init(request)
 {
-    console.log("INITED");
+    if (request.pageTabId)
+    {
+        new Console({pageTabId: request.pageTabId});
+    }
+    else if (request.consoleTabId)
+    {
+        new Page({consoleTabId: request.consoleTabId});
+    }
+    else
+    {
+        var URL = window.location.href,
+            attributes = document.documentElement.attributes;
+
+        document.documentElement.innerHTML = "";
+
+        for (var counter = 0; counter < attributes.length; counter++)
+        {
+            document.documentElement.removeAttribute(attributes[counter].name);
+        }
+
+        new Separator({URL: URL});
+    }
 }
-
-chrome.runtime.onMessage.addListener(init.bind(this));
-chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
-
-/*var URL = window.location.href;
 
 window.stop();
-document.documentElement.innerHTML = "";
-
-var attributes = document.documentElement.attributes;
-
-for (var counter = 0; counter < attributes.length; counter++)
-{
-    document.documentElement.removeAttribute(attributes[counter].name);
-}
-
-new Console({URL: URL});*/
+chrome.runtime.onMessage.addListener(init.bind(this));
+chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
