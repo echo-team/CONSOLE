@@ -5,16 +5,16 @@
 function Core(properties)
 {
     /**
-     * Constant with URL to ghost page
+     * Constant with URL to page where console will be opened in separate tab
      * @type {String}
      */
-    var EXTENSION_GHOSTPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/GHOST.HTML";
+    var EXTENSION_CONSOLEPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/CONSOLE.HTML";
 
     /**
      * Object with tabs which iframes were not loaded yet
      * @type {Object}
      */
-    var initQueue = {};event
+    var initQueue = {};
 
     /**
      * Array of tabs with opened console
@@ -27,7 +27,8 @@ function Core(properties)
      */
     var settings =
     {
-        makeConsoleActive: 1
+        makeConsoleActive: 1,
+        newTab: 0
     }
 
     /**
@@ -115,6 +116,25 @@ function Core(properties)
                     this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
                 }
             }
+            else if (request.type == "CONSOLE_INIT")
+            {
+                console.log("INITTING...");
+
+                if (settings.newTab)
+                {
+                    chrome.tabs.create({url: EXTENSION_CONSOLEPAGE},
+                        (function(tab)
+                        {
+                            chrome.tabs.sendMessage(tab.id, {type: "CONSOLE_INIT", pageTabId: sender.tab.id});
+                            chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", consoleTabId: tab.id});
+                        }).bind(this)
+                    );
+                }
+                else
+                {
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT"});
+                }
+            }
         }).bind(this)
     );
 
@@ -135,24 +155,29 @@ function Core(properties)
     chrome.webRequest.onHeadersReceived.addListener(
         function(info)
         {
-            var headers = info.responseHeaders;
+            var headers = info.responseHeaders,
+                counter = 0;
 
-            for (var counter = 0; counter < headers.length; counter++)
+            while (counter < headers.length)
             {
                 var header = headers[counter].name.toLowerCase();
-                if (header == "x-frame-options" || header == "frame-options")
+
+                if (["x-frame-options", "frame-options", "content-security-policy", "x-content-type-options", "strict-transport-security", "x-xss-protection"].indexOf(header) > -1)
                 {
                     headers.splice(counter, 1);
                 }
+                else
+                {
+                    counter++;
+                }
             }
 
-            //headers.push({name: "Content-Security-Policy", value: "frame-src chrome-extension://klhbjkloifopollfbhkodpjhjfjhjogb/"});
-
+            console.log(info);
             return {responseHeaders: headers};
         },
         {
             urls: [ "*://*/*" ],
-            types: [ "sub_frame" ]
+            types: [ "main_frame", "sub_frame" ]
         },
         ['blocking', 'responseHeaders']
     );

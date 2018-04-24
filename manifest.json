@@ -21,6 +21,6 @@
             "js": ["JS/CONTENT/BASIS.MIN.JS", "JS/CONTENT/RISE.MIN.JS", "JS/CONTENT/INTERFACE.JS", "JS/CONTENT/CONSOLE.JS", "JS/CONTENT/MAIN.JS"]
         }
     ],
-    "permissions": ["tabs", "webNavigation", "webRequest", "webRequestBlocking", "*://*/*"],
+    "permissions": ["tabs", "webNavigation", "webRequest", "webRequestBlocking", "http://*/*", "https://*/*"],
     "web_accessible_resources": ["HTML/GHOST.HTML"]
 }

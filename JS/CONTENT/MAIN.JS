@@ -1,4 +1,12 @@
-var URL = window.location.href;
+function init(request)
+{
+    console.log("INITED");
+}
+
+chrome.runtime.onMessage.addListener(init.bind(this));
+chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
+
+/*var URL = window.location.href;
 
 window.stop();
 document.documentElement.innerHTML = "";
@@ -10,4 +18,4 @@ for (var counter = 0; counter < attributes.length; counter++)
     document.documentElement.removeAttribute(attributes[counter].name);
 }
 
-new Console({URL: URL});
+new Console({URL: URL});*/
