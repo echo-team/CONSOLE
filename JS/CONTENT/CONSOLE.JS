@@ -28,7 +28,16 @@ function Console(properties)
      */
     this.setOrientation = function(orientation)
     {
-        interface.load.aside[orientation]();
+        interface[orientation]();
+    }
+
+    /**
+     * Setts interface preset
+     * @param {String} preset - preset to set
+     */
+    this.setInterface = function(preset)
+    {
+        interface.load(preset);
     }
 
     /**
@@ -40,7 +49,7 @@ function Console(properties)
      * Creating interface and the main tab
      */
     interface = new Interface({parent: DOM.parent});
-    interface.load.aside.portrait();
+    interface.load("aside");
 
     interface.newSection("Архитектура", "Инструменты");
     interface.newSection("Консоль", "Инструменты");
