@@ -81,8 +81,15 @@ function Interface(properties)
     {
         portrait: function()
         {
-            DOM.riseMenu.appendChild(DOM.menu);
+            if (DOM.menu.parentNode != DOM.riseMenu)
+            {
+                DOM.riseMenu.appendChild(DOM.menu);
+            }
             rise.showTab("MENU");
+
+            DOM.container.classList.remove(CSS.presets.aside.album.container);
+            DOM.menu.classList.remove(CSS.presets.aside.album.menu);
+            DOM.tabsContainer.classList.remove(CSS.presets.aside.album.tabsContainer);
 
             DOM.container.classList.add(CSS.presets.aside.portrait.container);
             DOM.menu.classList.add(CSS.presets.aside.portrait.menu);
@@ -94,6 +101,10 @@ function Interface(properties)
         album: function()
         {
             DOM.container.appendChild(DOM.menu);
+
+            DOM.container.classList.remove(CSS.presets.aside.portrait.container);
+            DOM.menu.classList.remove(CSS.presets.aside.portrait.menu);
+            DOM.tabsContainer.classList.remove(CSS.presets.aside.portrait.tabsContainer);
 
             DOM.container.classList.add(CSS.presets.aside.album.container);
             DOM.menu.classList.add(CSS.presets.aside.album.menu);

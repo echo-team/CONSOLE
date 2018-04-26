@@ -41,6 +41,11 @@ function Separator(properties)
             }
         }
 
+    /**
+     * Instance of Console class
+     * @type {Console}
+     */
+    var customConsole;
 
     /**
      * Sets position of the console
@@ -48,6 +53,15 @@ function Separator(properties)
      */
     function setConsolePosition(position)
     {
+        if (["LEFT", "RIGHT"].indexOf(position) > -1)
+        {
+            customConsole.setOrientation("portrait");
+        }
+        else
+        {
+            customConsole.setOrientation("album");
+        }
+
         position = position.toLowerCase();
 
         DOM.wrap.classList.add(CSS.wrap[position]);
@@ -63,12 +77,10 @@ function Separator(properties)
             (function(mutations)
             {
                 document.title = title.innerHTML;
-                console.log(mutations);
             }).bind(this)
         );
 
         titleListener.observe(title, {characterData: true, childList: true, subtree: true});
-        console.log(title);
     }
 
     /**
@@ -138,8 +150,8 @@ function Separator(properties)
         }).bind(this), 100
     );
 
+    customConsole = new Console({parent: DOM.container});
     setConsolePosition("LEFT");
-    new Console({parent: DOM.container});
 
 
     /**

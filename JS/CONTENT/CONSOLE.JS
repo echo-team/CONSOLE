@@ -23,6 +23,15 @@ function Console(properties)
     var interface;
 
     /**
+     * Setts interface orientation
+     * @param {String} orientation - orientation to set for current preset
+     */
+    this.setOrientation = function(orientation)
+    {
+        interface.load.aside[orientation]();
+    }
+
+    /**
      * Creating DOM of the class
      */
     DOM.parent = properties.parent;
