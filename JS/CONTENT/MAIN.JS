@@ -1,26 +1,31 @@
 function init(request)
 {
-    if (request.pageTabId)
+    if (request.type == "CONSOLE_INIT")
     {
-        new Console({pageTabId: request.pageTabId});
-    }
-    else if (request.consoleTabId)
-    {
-        new Page({consoleTabId: request.consoleTabId});
-    }
-    else
-    {
-        var URL = window.location.href,
-            attributes = document.documentElement.attributes;
-
-        document.documentElement.innerHTML = "";
-
-        for (var counter = 0; counter < attributes.length; counter++)
+        if (request.pageTabId)
         {
-            document.documentElement.removeAttribute(attributes[counter].name);
+            new Console({pageTabId: request.pageTabId});
+        }
+        else if (request.consoleTabId)
+        {
+            new Page({consoleTabId: request.consoleTabId});
+        }
+        else
+        {
+            var URL = window.location.href,
+                attributes = document.documentElement.attributes;
+
+            document.documentElement.innerHTML = "";
+
+            for (var counter = 0; counter < attributes.length; counter++)
+            {
+                document.documentElement.removeAttribute(attributes[counter].name);
+            }
+
+            new Separator({URL: URL});
         }
 
-        new Separator({URL: URL});
+        chrome.runtime.onMessage.removeListener(init.bind(this));   ``
     }
 }
 
