@@ -68,16 +68,19 @@ function Separator(properties)
         DOM.page.classList.add(CSS.page[position]);
     }
 
-    function setTitleListener()
+    /**
+     * Sets DOM mutation listener for reacting on page header changing
+     * @param {Element} title - DOM title element
+     */
+    function setTitleListener(title)
     {
-        var title = DOM.page.contentDocument.head.querySelector("title");
         document.title = title.innerHTML;
 
         var titleListener = new MutationObserver(
-            (function(mutations)
+            (function(title)
             {
                 document.title = title.innerHTML;
-            }).bind(this)
+            }).bind(null, title)
         );
 
         titleListener.observe(title, {characterData: true, childList: true, subtree: true});
@@ -107,7 +110,7 @@ function Separator(properties)
                                     if (node.tagName == "TITLE")
                                     {
                                         titleWaiter.disconnect();
-                                        setTitleListener();
+                                        setTitleListener(node);
                                     }
                                 }).bind(this)
                             );
