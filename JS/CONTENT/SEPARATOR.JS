@@ -88,7 +88,6 @@ function Separator(properties)
      */
     function setTabName()
     {
-
         if (!DOM.page.contentDocument.title)
         {
             var titleWaiter = new MutationObserver(
@@ -97,22 +96,37 @@ function Separator(properties)
                     mutations.forEach(
                         (function(mutation)
                         {
-                            if (mutation.addedNodes.tagName == "TITLE")
+                            if (!mutation.addedNodes)
                             {
-                                titleWaiter.disconnect();
-                                setTitleListener();
+                                return;
                             }
+
+                            mutation.addedNodes.forEach(
+                                (function(node)
+                                {
+                                    if (node.tagName == "TITLE")
+                                    {
+                                        titleWaiter.disconnect();
+                                        setTitleListener();
+                                    }
+                                }).bind(this)
+                            );
                         }).bind(this)
                     );
                 }).bind(this)
             );
 
-            titleWaiter.observe(DOM.page.contentDocument.head, {childList: true, subtree: true});
+            titleWaiter.observe(DOM.page.contentDocument, {childList: true, subtree: true});
         }
         else
         {
             setTitleListener();
         }
+    }
+
+    function createPage(event)
+    {
+        new Page();
     }
 
     /**
@@ -138,17 +152,7 @@ function Separator(properties)
     DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
     DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
     DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
-
-    var iframeLoadingInterval = setInterval(
-        (function()
-        {
-            if (DOM.page.contentWindow.location.href != "about:blank" && DOM.page.contentDocument.head)
-            {
-                clearInterval(iframeLoadingInterval);
-                setTabName();
-            }
-        }).bind(this), 100
-    );
+    DOM.page.setEventListeners({"startloading": [createPage.bind(this), setTabName.bind(this)]});
 
     customConsole = new Console({parent: DOM.container});
     setConsolePosition("LEFT");
