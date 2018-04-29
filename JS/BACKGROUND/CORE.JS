@@ -97,16 +97,17 @@ function Core(properties)
                 this.sendCloseSignal(tabId);
             }
         }
-        else if (tab.type == "page" && !tab.consoleTabId)
+        else if (tab.type == "page" && tab.consoleTabId == undefined)
         {
             chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, active: tab.activateConsole},
                 function(consoleTab)
                 {
                     tabs.push({id: consoleTab.id, type: "console", pageTabId: tabId});
+                    tab.consoleTabId = consoleTab.id;
                 }
             );
         }
-        else if (tab.type == "page" && tab.activateConsole)
+        else if (tab.type == "page" && tab.consoleTabId != undefined)
         {
             chrome.tabs.remove(tab.consoleTabId);
             tab.consoleTabId = undefined;
@@ -136,15 +137,20 @@ function Core(properties)
         {
             if (request.type == "CONSOLE_STATE")
             {
+                var consoleTab = tabs.findObject("id", sender.tab.id);
+
                 if (request.console)
                 {
-                    opened.push(sender.tab.id);
+                    opened.push(consoleTab.id);
+                    opened.push(consoleTab.pageTabId);
                     this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
                 }
                 else
                 {
-                    opened.splice(opened.indexOf(sender.tab.id), 1);
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+                    console.log("CLOSED");
+                    opened.splice(opened.indexOf(consoleTab.id), 1);
+                    opened.splice(opened.indexOf(consoleTab.pageTabId), 1);
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: consoleTab.pageTabId});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
