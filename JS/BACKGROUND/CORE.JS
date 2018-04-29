@@ -23,12 +23,19 @@ function Core(properties)
     var opened = [];
 
     /**
+     * Array with information about opened tabs
+     * @type {Array}
+     */
+    var tabs = [];
+
+    /**
      * Instance of the Settings class
+     * @type {Object}
      */
     var settings =
     {
-        makeConsoleActive: 1,
-        newTab: 0
+        activateConsole: true,
+        type: "separate"
     }
 
     /**
@@ -77,13 +84,37 @@ function Core(properties)
      */
     this.toggleConsole = function(tabId)
     {
-        if (opened.indexOf(tabId) == -1)
+        var tab = tabs.findObject("id", tabId);
+
+        if (tab.type == "mixed")
         {
-            this.sendOpenSignal(tabId);
+            if (opened.indexOf(tabId) == -1)
+            {
+                this.sendOpenSignal(tabId);
+            }
+            else
+            {
+                this.sendCloseSignal(tabId);
+            }
         }
-        else
+        else if (tab.type == "page" && !tab.consoleTabId)
         {
-            this.sendCloseSignal(tabId);
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, active: tab.activateConsole},
+                function(consoleTab)
+                {
+                    tabs.push({id: consoleTab.id, type: "console", pageTabId: tabId});
+                }
+            );
+        }
+        else if (tab.type == "page" && tab.activateConsole)
+        {
+            chrome.tabs.remove(tab.consoleTabId);
+            tab.consoleTabId = undefined;
+        }
+        else if (tab.type == "console")
+        {
+            chrome.tabs.remove(tab.id);
+            tabs.findObject("id", tab.pageTabId).consoleTabId = undefined;
         }
     }
 
@@ -118,21 +149,21 @@ function Core(properties)
             }
             else if (request.type == "CONSOLE_INIT")
             {
-                console.log("INITTING...");
+                var tab = tabs.findObject("id", sender.tab.id);
 
-                if (settings.newTab)
+                if (tab && tab.type == "console")
                 {
-                    chrome.tabs.create({url: EXTENSION_CONSOLEPAGE},
-                        (function(tab)
-                        {
-                            chrome.tabs.sendMessage(tab.id, {type: "CONSOLE_INIT", pageTabId: sender.tab.id});
-                            chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", consoleTabId: tab.id});
-                        }).bind(this)
-                    );
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.pageTabId});
+                }
+                else if (settings.type == "separate")
+                {
+                    tabs.push({id: sender.tab.id, type: "page", activateConsole: settings.activateConsole});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
                 }
                 else
                 {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT"});
+                    tabs.push({id: sender.tab.id, type: "mixed"});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
                 }
             }
         }).bind(this)
@@ -172,7 +203,6 @@ function Core(properties)
                 }
             }
 
-            console.log(info);
             return {responseHeaders: headers};
         },
         {
