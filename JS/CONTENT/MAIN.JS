@@ -2,15 +2,15 @@ function init(request)
 {
     if (request.type == "CONSOLE_INIT")
     {
-        if (request.pageTabId)
+        if (request.tabType == "console")
         {
-            new Console({pageTabId: request.pageTabId});
+            new Console({pageTabId: request.pageTabId, parent: document.body});
         }
-        else if (request.consoleTabId)
+        else if (request.tabType == "page")
         {
-            new Page({consoleTabId: request.consoleTabId});
+            new Page();
         }
-        else
+        else if (request.tabType == "mixed")
         {
             var URL = window.location.href,
                 attributes = document.documentElement.attributes;
@@ -25,7 +25,7 @@ function init(request)
             new Separator({URL: URL});
         }
 
-        chrome.runtime.onMessage.removeListener(init.bind(this));   ``
+        chrome.runtime.onMessage.removeListener(init.bind(this));
     }
 }
 
