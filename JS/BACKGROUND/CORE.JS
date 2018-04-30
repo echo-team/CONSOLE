@@ -139,7 +139,11 @@ function Core(properties)
             {
                 var consoleTab = tabs.findObject("id", sender.tab.id);
 
-                if (request.console)
+                if (tabs.findObject(consoleTab.pageTabId) == undefined)
+                {
+                    return;
+                }
+                else if (request.console)
                 {
                     opened.push(consoleTab.id);
                     opened.push(consoleTab.pageTabId);
@@ -147,7 +151,6 @@ function Core(properties)
                 }
                 else
                 {
-                    console.log("CLOSED");
                     opened.splice(opened.indexOf(consoleTab.id), 1);
                     opened.splice(opened.indexOf(consoleTab.pageTabId), 1);
                     this.console.onClosed.dispatch({console: false, from: "CORE", tabId: consoleTab.pageTabId});
@@ -172,6 +175,26 @@ function Core(properties)
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
                 }
             }
+        }).bind(this)
+    );
+
+    chrome.tabs.onRemoved.addListener(
+        (function(tabId)
+        {
+            var tab = tabs.findObject("id", tabId),
+                openedIndex = opened.indexOf(tabId);
+
+            if (tab.type == "page" && tab.consoleTabId != undefined)
+            {
+                chrome.tabs.remove(tab.consoleTabId);
+            }
+            tabs.splice(tabs.indexOf(tab), 1);
+
+            if (openedIndex > 0)
+            {
+                opened.splice(openedIndex, 1);
+            }
+
         }).bind(this)
     );
 
