@@ -6,6 +6,13 @@ function init(request)
         {
             new Console({pageTabId: request.pageTabId, parent: document.body});
             chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
+
+            window.addEventListener("beforeunload",
+                function(event)
+                {
+                    chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: false});
+                }
+            );
         }
         else if (request.tabType == "page")
         {
@@ -33,10 +40,3 @@ function init(request)
 
 chrome.runtime.onMessage.addListener(init.bind(this));
 chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
-
-window.addEventListener("beforeunload",
-    function(event)
-    {
-        chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: false});
-    }
-);
