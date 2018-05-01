@@ -194,7 +194,6 @@ function Core(properties)
             {
                 opened.splice(openedIndex, 1);
             }
-
         }).bind(this)
     );
 
