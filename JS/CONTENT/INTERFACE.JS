@@ -81,8 +81,15 @@ function Interface(properties)
     {
         portrait: function()
         {
-            DOM.riseMenu.appendChild(DOM.menu);
+            if (DOM.menu.parentNode != DOM.riseMenu)
+            {
+                DOM.riseMenu.appendChild(DOM.menu);
+            }
             rise.showTab("MENU");
+
+            DOM.container.classList.remove(CSS.presets.aside.album.container);
+            DOM.menu.classList.remove(CSS.presets.aside.album.menu);
+            DOM.tabsContainer.classList.remove(CSS.presets.aside.album.tabsContainer);
 
             DOM.container.classList.add(CSS.presets.aside.portrait.container);
             DOM.menu.classList.add(CSS.presets.aside.portrait.menu);
@@ -95,19 +102,44 @@ function Interface(properties)
         {
             DOM.container.appendChild(DOM.menu);
 
+            DOM.container.classList.remove(CSS.presets.aside.portrait.container);
+            DOM.menu.classList.remove(CSS.presets.aside.portrait.menu);
+            DOM.tabsContainer.classList.remove(CSS.presets.aside.portrait.tabsContainer);
+
             DOM.container.classList.add(CSS.presets.aside.album.container);
             DOM.menu.classList.add(CSS.presets.aside.album.menu);
             DOM.tabsContainer.classList.add(CSS.presets.aside.album.tabsContainer);
+
+            state.preset = "aside";
+            state.orientation = "album";
         }
     }
 
 
     /**
-     * HTML configuration loader
-     * @type {Object}
+     * Setts album orientation for current preset
      */
-    this.load = presets;
+    this.album = function()
+    {
+        presets[state.preset].album();
+    }
 
+    /**
+     * Setts portrait orientation for current preset
+     */
+    this.portrait = function()
+    {
+        presets[state.preset].portrait();
+    }
+
+    /**
+     * Loads HTML configuration of interface
+     * @param {String} preset - name of configuration to set
+     */
+    this.load = function(preset)
+    {
+        presets[preset][state.orientation]();
+    }
 
     /**
      * Creates a new static tab
@@ -153,7 +185,6 @@ function Interface(properties)
         return rise.createTab(name);
     }
 
-
     /**
      * Creating DOM of the class
      */
@@ -166,4 +197,10 @@ function Interface(properties)
     rise = new Rise(DOM.tabsContainer);
     DOM.riseMenu = rise.createTab("MENU");
     DOM.riseMenu.newChildElement("h1", {classList: [CSS.header, CSS.theme.header]}, "Главная");
+
+    for (var key in presets)
+    {
+        presets[key].portrait();
+        break;
+    }
 }

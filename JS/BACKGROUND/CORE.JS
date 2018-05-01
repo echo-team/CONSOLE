@@ -5,16 +5,16 @@
 function Core(properties)
 {
     /**
-     * Constant with URL to ghost page
+     * Constant with URL to page where console will be opened in separate tab
      * @type {String}
      */
-    var EXTENSION_GHOSTPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/GHOST.HTML";
+    var EXTENSION_CONSOLEPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/CONSOLE.HTML";
 
     /**
      * Object with tabs which iframes were not loaded yet
      * @type {Object}
      */
-    var initQueue = {};event
+    var initQueue = {};
 
     /**
      * Array of tabs with opened console
@@ -23,11 +23,19 @@ function Core(properties)
     var opened = [];
 
     /**
+     * Array with information about opened tabs
+     * @type {Array}
+     */
+    var tabs = [];
+
+    /**
      * Instance of the Settings class
+     * @type {Object}
      */
     var settings =
     {
-        makeConsoleActive: 1
+        activateConsole: true,
+        type: "separate"
     }
 
     /**
@@ -76,13 +84,38 @@ function Core(properties)
      */
     this.toggleConsole = function(tabId)
     {
-        if (opened.indexOf(tabId) == -1)
+        var tab = tabs.findObject("id", tabId);
+
+        if (tab.type == "mixed")
         {
-            this.sendOpenSignal(tabId);
+            if (opened.indexOf(tabId) == -1)
+            {
+                this.sendOpenSignal(tabId);
+            }
+            else
+            {
+                this.sendCloseSignal(tabId);
+            }
         }
-        else
+        else if (tab.type == "page" && tab.consoleTabId == undefined)
         {
-            this.sendCloseSignal(tabId);
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, active: tab.activateConsole},
+                function(consoleTab)
+                {
+                    tabs.push({id: consoleTab.id, type: "console", pageTabId: tabId});
+                    tab.consoleTabId = consoleTab.id;
+                }
+            );
+        }
+        else if (tab.type == "page" && tab.consoleTabId != undefined)
+        {
+            chrome.tabs.remove(tab.consoleTabId);
+            tab.consoleTabId = undefined;
+        }
+        else if (tab.type == "console")
+        {
+            chrome.tabs.remove(tab.id);
+            tabs.findObject("id", tab.pageTabId).consoleTabId = undefined;
         }
     }
 
@@ -104,16 +137,62 @@ function Core(properties)
         {
             if (request.type == "CONSOLE_STATE")
             {
-                if (request.console)
+                var consoleTab = tabs.findObject("id", sender.tab.id);
+
+                if (tabs.findObject(consoleTab.pageTabId) == undefined)
                 {
-                    opened.push(sender.tab.id);
+                    return;
+                }
+                else if (request.console)
+                {
+                    opened.push(consoleTab.id);
+                    opened.push(consoleTab.pageTabId);
                     this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
                 }
                 else
                 {
-                    opened.splice(opened.indexOf(sender.tab.id), 1);
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: sender.tab.id});
+                    opened.splice(opened.indexOf(consoleTab.id), 1);
+                    opened.splice(opened.indexOf(consoleTab.pageTabId), 1);
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: consoleTab.pageTabId});
                 }
+            }
+            else if (request.type == "CONSOLE_INIT")
+            {
+                var tab = tabs.findObject("id", sender.tab.id);
+
+                if (tab && tab.type == "console")
+                {
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.pageTabId});
+                }
+                else if (settings.type == "separate")
+                {
+                    tabs.push({id: sender.tab.id, type: "page", activateConsole: settings.activateConsole});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
+                }
+                else
+                {
+                    tabs.push({id: sender.tab.id, type: "mixed"});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
+                }
+            }
+        }).bind(this)
+    );
+
+    chrome.tabs.onRemoved.addListener(
+        (function(tabId)
+        {
+            var tab = tabs.findObject("id", tabId),
+                openedIndex = opened.indexOf(tabId);
+
+            if (tab.type == "page" && tab.consoleTabId != undefined)
+            {
+                chrome.tabs.remove(tab.consoleTabId);
+            }
+            tabs.splice(tabs.indexOf(tab), 1);
+
+            if (openedIndex > 0)
+            {
+                opened.splice(openedIndex, 1);
             }
         }).bind(this)
     );
@@ -135,24 +214,28 @@ function Core(properties)
     chrome.webRequest.onHeadersReceived.addListener(
         function(info)
         {
-            var headers = info.responseHeaders;
+            var headers = info.responseHeaders,
+                counter = 0;
 
-            for (var counter = 0; counter < headers.length; counter++)
+            while (counter < headers.length)
             {
                 var header = headers[counter].name.toLowerCase();
-                if (header == "x-frame-options" || header == "frame-options")
+
+                if (["x-frame-options", "frame-options", "content-security-policy", "x-content-type-options", "strict-transport-security", "x-xss-protection"].indexOf(header) > -1)
                 {
                     headers.splice(counter, 1);
                 }
+                else
+                {
+                    counter++;
+                }
             }
-
-            //headers.push({name: "Content-Security-Policy", value: "frame-src chrome-extension://klhbjkloifopollfbhkodpjhjfjhjogb/"});
 
             return {responseHeaders: headers};
         },
         {
             urls: [ "*://*/*" ],
-            types: [ "sub_frame" ]
+            types: [ "main_frame", "sub_frame" ]
         },
         ['blocking', 'responseHeaders']
     );
