@@ -215,10 +215,14 @@ function Core(properties)
         }).bind(this)
     );
 
+    /**
+     * Checks if console already bound to activated tab
+     * Parses suitable event
+     */
     chrome.tabs.onActivated.addListener(
         (function(event)
         {
-            if (opened.indexOf(event.tabId) > -1)
+            if (tabs.findObject("id", event.tabId).console != null)
             {
                 this.console.onOpened.dispatch({console: true, from: "CORE", tabId: event.tabId});
             }
