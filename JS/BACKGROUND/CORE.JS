@@ -87,7 +87,7 @@ function Core(properties)
         }
         else if (tab.type == "page" && tab.console == null)
         {
-            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tabId});
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tab.id});
         }
         else if (tab.type == "page" && tab.console != null)
         {
@@ -153,28 +153,36 @@ function Core(properties)
     /**
      * Updates tabs[] with new tab (page or console)
      */
-    chrome.tabs.onCreated.addListener(
-        (function(tab)
+    chrome.tabs.onUpdated.addListener(
+        (function(tabId, change, tab)
         {
-            var console, page;
+            if (tab.status != "loading")
+            {
+                return;
+            }
+
+            var terminal, page, type;
 
             if (tab.url == EXTENSION_CONSOLEPAGE)
             {
-                console = tab.id;
+                terminal = tab.id;
                 page = tab.openerTabId;                   //FIXME - openerTabId may be not set if page tab was already closed
+                type = "console";
+                tabs.findObject("id", page).console = tab.id;
             }
             else
             {
-                console = null;
+                terminal = null;
                 page = tab.id;
+                type = settings.type == "mixed" ? "mixed" : "page";
             }
 
             tabs.push(
                 {
-                    id: tabId,
-                    console: console,
+                    id: tab.id,
+                    console: terminal,
                     page: page,
-                    type: settings.type
+                    type: type
                 });
 
         }).bind(this)
@@ -212,6 +220,7 @@ function Core(properties)
         (function(event)
         {
             var tab = tabs.findObject("id", event.tabId);
+            console.log(tabs);
 
             if (tab && tab.console != null)
             {
