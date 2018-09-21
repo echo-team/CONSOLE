@@ -166,6 +166,36 @@ function Core(properties)
         }).bind(this)
     );
 
+    /**
+     * Updates tabs[] with new tab (page or console)
+     */
+    chrome.tabs.onCreated.addListener(
+        (function(tabId, changed, tab)
+        {
+            var console, page;
+
+            if (tab.url == EXTENSION_CONSOLEPAGE)
+            {
+                console = tabId;
+                page = tab.openerTabId;                   //FIXME - openerTabId may be not set if page tab was already closed
+            }
+            else
+            {
+                console = null;
+                page = tabId;
+            }
+
+            tabs.push(
+                {
+                    id: tabId,
+                    console: console,
+                    page: page,
+                    type: settings.type
+                });
+
+        }).bind(this)
+    );
+
     chrome.tabs.onRemoved.addListener(
         (function(tabId)
         {
