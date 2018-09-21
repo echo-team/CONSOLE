@@ -76,7 +76,7 @@ function Core(properties)
 
         if (tab.type == "mixed")
         {
-            if (opened.indexOf(tabId) == -1)
+            if (tabs.findObject("id", tabId))
             {
                 this.sendOpenSignal(tabId);
             }
@@ -85,25 +85,17 @@ function Core(properties)
                 this.sendCloseSignal(tabId);
             }
         }
-        else if (tab.type == "page" && tab.consoleTabId == undefined)
+        else if (tab.type == "page" && tab.console == null)
         {
-            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, active: tab.activateConsole},
-                function(consoleTab)
-                {
-                    tabs.push({id: consoleTab.id, type: "console", pageTabId: tabId});
-                    tab.consoleTabId = consoleTab.id;
-                }
-            );
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tabId});
         }
-        else if (tab.type == "page" && tab.consoleTabId != undefined)
+        else if (tab.type == "page" && tab.console != null)
         {
-            chrome.tabs.remove(tab.consoleTabId);
-            tab.consoleTabId = undefined;
+            chrome.tabs.remove(tab.console);
         }
         else if (tab.type == "console")
         {
             chrome.tabs.remove(tab.id);
-            tabs.findObject("id", tab.pageTabId).consoleTabId = undefined;
         }
     }
 
@@ -203,11 +195,16 @@ function Core(properties)
     chrome.tabs.onRemoved.addListener(
         (function(tabId)
         {
-            var tab = tabs.findObject("id", tabId);
+            var tab = tabs.findObject("id", tabId),
+                page = tabs.findObject("id", tab.page);
 
             if (tab.type == "page" && tab.console != null)
             {
                 chrome.tabs.remove(tab.console);
+            }
+            else if (tab.type == "console" && page)
+            {
+                page.console = null;
             }
 
             tabs.splice(tabs.indexOf(tab), 1);
@@ -222,7 +219,9 @@ function Core(properties)
     chrome.tabs.onActivated.addListener(
         (function(event)
         {
-            if (tabs.findObject("id", event.tabId).console != null)
+            var tab = tabs.findObject("id", event.tabId);
+
+            if (tab && tab.console != null)
             {
                 this.console.onOpened.dispatch({console: true, from: "CORE", tabId: event.tabId});
             }
