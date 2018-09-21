@@ -117,23 +117,17 @@ function Core(properties)
         {
             if (request.type == "CONSOLE_STATE")
             {
-                var consoleTab = tabs.findObject("id", sender.tab.id);
+                var tab = tabs.findObject("id", sender.tab.id);
 
-                if (tabs.findObject(consoleTab.pageTabId) == undefined)
+                if (request.console)
                 {
-                    return;
-                }
-                else if (request.console)
-                {
-                    opened.push(consoleTab.id);
-                    opened.push(consoleTab.pageTabId);
+                    tab.console = sender.tab.id;
                     this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
                 }
                 else
                 {
-                    opened.splice(opened.indexOf(consoleTab.id), 1);
-                    opened.splice(opened.indexOf(consoleTab.pageTabId), 1);
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: consoleTab.pageTabId});
+                    tab.console = null;
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: tab.page});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
@@ -142,16 +136,14 @@ function Core(properties)
 
                 if (tab && tab.type == "console")
                 {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.pageTabId});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.page});
                 }
                 else if (settings.type == "separate")
                 {
-                    tabs.push({id: sender.tab.id, type: "page", activateConsole: settings.activateConsole});
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
                 }
                 else
                 {
-                    tabs.push({id: sender.tab.id, type: "mixed"});
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
                 }
             }
