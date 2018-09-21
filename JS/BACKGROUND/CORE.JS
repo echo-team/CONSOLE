@@ -23,7 +23,7 @@ function Core(properties)
     var settings =
     {
         activateConsole: true,
-        type: "mived"
+        type: "separate"
     }
 
     /**
@@ -170,19 +170,19 @@ function Core(properties)
      * Updates tabs[] with new tab (page or console)
      */
     chrome.tabs.onCreated.addListener(
-        (function(tabId, changed, tab)
+        (function(tab)
         {
             var console, page;
 
             if (tab.url == EXTENSION_CONSOLEPAGE)
             {
-                console = tabId;
+                console = tab.id;
                 page = tab.openerTabId;                   //FIXME - openerTabId may be not set if page tab was already closed
             }
             else
             {
                 console = null;
-                page = tabId;
+                page = tab.id;
             }
 
             tabs.push(
@@ -196,22 +196,22 @@ function Core(properties)
         }).bind(this)
     );
 
+    /**
+     * Updates tabs[] with removing closed tabs
+     * Removes unpaged console tabs
+     */
     chrome.tabs.onRemoved.addListener(
         (function(tabId)
         {
-            var tab = tabs.findObject("id", tabId),
-                openedIndex = opened.indexOf(tabId);
+            var tab = tabs.findObject("id", tabId);
 
-            if (tab.type == "page" && tab.consoleTabId != undefined)
+            if (tab.type == "page" && tab.console != null)
             {
-                chrome.tabs.remove(tab.consoleTabId);
+                chrome.tabs.remove(tab.console);
             }
+
             tabs.splice(tabs.indexOf(tab), 1);
 
-            if (openedIndex > 0)
-            {
-                opened.splice(openedIndex, 1);
-            }
         }).bind(this)
     );
 
