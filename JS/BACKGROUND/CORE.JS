@@ -11,18 +11,6 @@ function Core(properties)
     var EXTENSION_CONSOLEPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/CONSOLE.HTML";
 
     /**
-     * Object with tabs which iframes were not loaded yet
-     * @type {Object}
-     */
-    var initQueue = {};
-
-    /**
-     * Array of tabs with opened console
-     * @type {Array}
-     */
-    var opened = [];
-
-    /**
      * Array with information about opened tabs
      * @type {Array}
      */
@@ -35,7 +23,7 @@ function Core(properties)
     var settings =
     {
         activateConsole: true,
-        type: "separate"
+        type: "mived"
     }
 
     /**
@@ -216,6 +204,8 @@ function Core(properties)
         {
             var headers = info.responseHeaders,
                 counter = 0;
+
+            console.log(headers);
 
             while (counter < headers.length)
             {
