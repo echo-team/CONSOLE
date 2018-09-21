@@ -74,24 +74,21 @@ function Core(properties)
     {
         var tab = tabs.findObject("id", tabId);
 
-        if (tab.type == "mixed")
+        if (tab.type == "mixed" && tab.console != null)
         {
-            if (tabs.findObject("id", tabId))
-            {
-                this.sendOpenSignal(tabId);
-            }
-            else
-            {
-                this.sendCloseSignal(tabId);
-            }
+            this.sendCloseSignal(tab.id);
         }
-        else if (tab.type == "page" && tab.console == null)
+        else if (tab.type == "mixed")
         {
-            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tab.id});
+            this.sendOpenSignal(tab.id);
         }
         else if (tab.type == "page" && tab.console != null)
         {
             chrome.tabs.remove(tab.console);
+        }
+        else if (tab.type == "page")
+        {
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tab.id});
         }
         else if (tab.type == "console")
         {
@@ -238,8 +235,6 @@ function Core(properties)
         {
             var headers = info.responseHeaders,
                 counter = 0;
-
-            console.log(headers);
 
             while (counter < headers.length)
             {
