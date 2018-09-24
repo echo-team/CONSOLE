@@ -119,12 +119,12 @@ function Core(properties)
                 if (request.console)
                 {
                     tab.console = sender.tab.id;
-                    this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
+                    this.console.onOpened.dispatch({console: true, from: "CORE", tabs: [tab.console, tab.page]});
                 }
                 else
                 {
                     tab.console = null;
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: tab.page});
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabs: [tab.page]});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
@@ -206,26 +206,6 @@ function Core(properties)
 
             tabs.splice(tabs.indexOf(tab), 1);
 
-        }).bind(this)
-    );
-
-    /**
-     * Checks if console already bound to activated tab
-     * Parses suitable event
-     */
-    chrome.tabs.onActivated.addListener(
-        (function(event)
-        {
-            var tab = tabs.findObject("id", event.tabId);
-
-            if (tab && tab.console != null)
-            {
-                this.console.onOpened.dispatch({console: true, from: "CORE", tabId: event.tabId});
-            }
-            else
-            {
-                this.console.onClosed.dispatch({console: false, from: "CORE", tabId: event.tabId});
-            }
         }).bind(this)
     );
 

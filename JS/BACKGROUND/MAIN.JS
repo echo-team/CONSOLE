@@ -15,16 +15,16 @@ var core = new Core(),
  */
 
 core.console.onOpened.addEventListener(
-    function()
+    function(event)
     {
-        button.changeState(true);
+        button.changeState(true, event.tabs);
     }
 );
 
 core.console.onClosed.addEventListener(
-    function()
+    function(event)
     {
-        button.changeState(false);
+        button.changeState(false, event.tabs);
     }
 );
 

@@ -5,11 +5,12 @@ function Button()
 {
     /**
      * Changes the main button picture
-     * @param {String} type - type of picture to set
+     * @param {String} type  - type of picture to set
+     * @param {Number} tabId - id of the tab to update the icon
      */
-    function changeIcon(type)
+    function changeIcon(type, tabId)
     {
-        chrome.browserAction.setIcon({path: "../IMG/" + type + ".PNG"});
+        chrome.browserAction.setIcon({path: "../IMG/" + type + "24.PNG", tabId: tabId});
     }
 
     /**
@@ -27,16 +28,16 @@ function Button()
     /**
      * Changes state of the button at the browser toolbar
      * @param {String} console - console status
+     * @param {Array}  tabs    - ids of tab needs update the icon
      */
-    this.changeState = function(console)
+    this.changeState = function(console, tabs)
     {
-        if (console)
-        {
-            changeIcon("OPENED");
-        }
-        else
-        {
-            changeIcon("CLOSED");
-        }
+        var state = console ? "OPENED" : "CLOSED";
+
+        tabs.forEach(
+            (function(tabId)
+            {
+                changeIcon(state, tabId);
+            }).bind(this))
     }
 }
