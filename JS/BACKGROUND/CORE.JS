@@ -11,18 +11,6 @@ function Core(properties)
     var EXTENSION_CONSOLEPAGE = "chrome-extension://" + EXTENSION_ID + "/HTML/CONSOLE.HTML";
 
     /**
-     * Object with tabs which iframes were not loaded yet
-     * @type {Object}
-     */
-    var initQueue = {};
-
-    /**
-     * Array of tabs with opened console
-     * @type {Array}
-     */
-    var opened = [];
-
-    /**
      * Array with information about opened tabs
      * @type {Array}
      */
@@ -86,36 +74,25 @@ function Core(properties)
     {
         var tab = tabs.findObject("id", tabId);
 
-        if (tab.type == "mixed")
+        if (tab.type == "mixed" && tab.console != null)
         {
-            if (opened.indexOf(tabId) == -1)
-            {
-                this.sendOpenSignal(tabId);
-            }
-            else
-            {
-                this.sendCloseSignal(tabId);
-            }
+            this.sendCloseSignal(tab.id);
         }
-        else if (tab.type == "page" && tab.consoleTabId == undefined)
+        else if (tab.type == "mixed")
         {
-            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, active: tab.activateConsole},
-                function(consoleTab)
-                {
-                    tabs.push({id: consoleTab.id, type: "console", pageTabId: tabId});
-                    tab.consoleTabId = consoleTab.id;
-                }
-            );
+            this.sendOpenSignal(tab.id);
         }
-        else if (tab.type == "page" && tab.consoleTabId != undefined)
+        else if (tab.type == "page" && tab.console != null)
         {
-            chrome.tabs.remove(tab.consoleTabId);
-            tab.consoleTabId = undefined;
+            chrome.tabs.remove(tab.console);
+        }
+        else if (tab.type == "page")
+        {
+            chrome.tabs.create({url: EXTENSION_CONSOLEPAGE, openerTabId: tab.id});
         }
         else if (tab.type == "console")
         {
             chrome.tabs.remove(tab.id);
-            tabs.findObject("id", tab.pageTabId).consoleTabId = undefined;
         }
     }
 
@@ -137,23 +114,17 @@ function Core(properties)
         {
             if (request.type == "CONSOLE_STATE")
             {
-                var consoleTab = tabs.findObject("id", sender.tab.id);
+                var tab = tabs.findObject("id", sender.tab.id);
 
-                if (tabs.findObject(consoleTab.pageTabId) == undefined)
+                if (request.console)
                 {
-                    return;
-                }
-                else if (request.console)
-                {
-                    opened.push(consoleTab.id);
-                    opened.push(consoleTab.pageTabId);
+                    tab.console = sender.tab.id;
                     this.console.onOpened.dispatch({console: true, from: "CORE", tabId: sender.tab.id});
                 }
                 else
                 {
-                    opened.splice(opened.indexOf(consoleTab.id), 1);
-                    opened.splice(opened.indexOf(consoleTab.pageTabId), 1);
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: consoleTab.pageTabId});
+                    tab.console = null;
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tabId: tab.page});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
@@ -162,45 +133,92 @@ function Core(properties)
 
                 if (tab && tab.type == "console")
                 {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.pageTabId});
+                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.page});
                 }
                 else if (settings.type == "separate")
                 {
-                    tabs.push({id: sender.tab.id, type: "page", activateConsole: settings.activateConsole});
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
                 }
                 else
                 {
-                    tabs.push({id: sender.tab.id, type: "mixed"});
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
                 }
             }
         }).bind(this)
     );
 
+    /**
+     * Updates tabs[] with new tab (page or console)
+     */
+    chrome.tabs.onUpdated.addListener(
+        (function(tabId, change, tab)
+        {
+            if (tabs.findObject("id", tabId))
+            {
+                return;
+            }
+
+            var terminal, page, type;
+
+            if (tab.url == EXTENSION_CONSOLEPAGE)
+            {
+                terminal = tab.id;
+                page = tab.openerTabId;                   //FIXME - openerTabId may be not set if page tab was already closed
+                type = "console";
+                tabs.findObject("id", page).console = tab.id;
+            }
+            else
+            {
+                terminal = null;
+                page = tab.id;
+                type = settings.type == "mixed" ? "mixed" : "page";
+            }
+
+            tabs.push(
+                {
+                    id: tab.id,
+                    console: terminal,
+                    page: page,
+                    type: type
+                });
+
+        }).bind(this)
+    );
+
+    /**
+     * Updates tabs[] with removing closed tabs
+     * Removes unpaged console tabs
+     */
     chrome.tabs.onRemoved.addListener(
         (function(tabId)
         {
             var tab = tabs.findObject("id", tabId),
-                openedIndex = opened.indexOf(tabId);
+                page = tabs.findObject("id", tab.page);
 
-            if (tab.type == "page" && tab.consoleTabId != undefined)
+            if (tab.type == "page" && tab.console != null)
             {
-                chrome.tabs.remove(tab.consoleTabId);
+                chrome.tabs.remove(tab.console);
             }
+            else if (tab.type == "console" && page)
+            {
+                page.console = null;
+            }
+
             tabs.splice(tabs.indexOf(tab), 1);
 
-            if (openedIndex > 0)
-            {
-                opened.splice(openedIndex, 1);
-            }
         }).bind(this)
     );
 
+    /**
+     * Checks if console already bound to activated tab
+     * Parses suitable event
+     */
     chrome.tabs.onActivated.addListener(
         (function(event)
         {
-            if (opened.indexOf(event.tabId) > -1)
+            var tab = tabs.findObject("id", event.tabId);
+
+            if (tab && tab.console != null)
             {
                 this.console.onOpened.dispatch({console: true, from: "CORE", tabId: event.tabId});
             }
