@@ -153,7 +153,7 @@ function Core(properties)
     chrome.tabs.onUpdated.addListener(
         (function(tabId, change, tab)
         {
-            if (tab.status != "loading")
+            if (tabs.findObject("id", tabId))
             {
                 return;
             }
@@ -217,7 +217,6 @@ function Core(properties)
         (function(event)
         {
             var tab = tabs.findObject("id", event.tabId);
-            console.log(tabs);
 
             if (tab && tab.console != null)
             {
