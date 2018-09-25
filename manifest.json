@@ -5,7 +5,12 @@
 
     "browser_action":
     {
-        "icon": "IMG/OPENNOACTIVE.PNG"
+        "default_icon":
+        {
+            "16": "IMG/LOADING16.PNG",
+            "24": "IMG/LOADING24.PNG",
+            "32": "IMG/LOADING32.PNG"
+        }
     },
 
     "background":
