@@ -10,6 +10,12 @@ function Button()
     var iconSize;
 
     /**
+     * Class event of clicking to the main button\
+     * @type {Object}
+     */
+    this.onClicked = new ClassEvent();
+
+    /**
      * Changes the main button picture
      * @param {String} type  - type of picture to set
      * @param {Number} tabId - id of the tab to update the icon
@@ -18,18 +24,6 @@ function Button()
     {
         chrome.browserAction.setIcon({path: "../IMG/" + type + iconSize + ".PNG", tabId: tabId});
     }
-
-    /**
-     * Class event of clicking to the main button
-     */
-    this.onClicked = new ClassEvent();
-
-    chrome.browserAction.onClicked.addListener(
-        (function(tab)
-        {
-            this.onClicked.dispatch({tabId: tab.id});
-        }).bind(this)
-    );
 
     /**
      * Changes state of the button at the browser toolbar
@@ -47,6 +41,10 @@ function Button()
             }).bind(this))
     }
 
+
+    /**
+     * Calculating the most suitable button size
+     */
     var size, inch = document.createElement("div");
 
     inch.style.width = "1IN";
@@ -65,4 +63,15 @@ function Button()
     {
         iconSize = 16;
     }
+
+
+    /**
+     * Making the button clicking event treating as a Button class event
+     */
+    chrome.browserAction.onClicked.addListener(
+        (function(tab)
+        {
+            this.onClicked.dispatch({tabId: tab.id});
+        }).bind(this)
+    );
 }
