@@ -72,9 +72,14 @@ function Core(properties)
      */
     this.toggleConsole = function(tabId)
     {
+
         var tab = tabs.findObject("id", tabId);
 
-        if (tab.type == "mixed" && tab.console != null)
+        if (!tab || !tab.active)
+        {
+            return;
+        }
+        else if (tab.type == "mixed" && tab.console != null)
         {
             this.sendCloseSignal(tab.id);
         }
@@ -146,6 +151,8 @@ function Core(properties)
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
                     this.console.onClosed.dispatch({console: false, from: "CORE", tab: [tab.id]});
                 }
+
+                tab.active = true;
             }
         }).bind(this)
     );
@@ -182,7 +189,8 @@ function Core(properties)
                     id: tab.id,
                     console: terminal,
                     page: page,
-                    type: type
+                    type: type,
+                    active: false
                 });
 
         }).bind(this)
