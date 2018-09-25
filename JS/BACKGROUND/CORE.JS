@@ -119,12 +119,12 @@ function Core(properties)
                 if (request.console)
                 {
                     tab.console = sender.tab.id;
-                    this.console.onOpened.dispatch({console: true, from: "CORE", tabs: [tab.console, tab.page]});
+                    this.console.onOpened.dispatch({console: true, from: "CORE", tab: [tab.id]});
                 }
                 else
                 {
                     tab.console = null;
-                    this.console.onClosed.dispatch({console: false, from: "CORE", tabs: [tab.page]});
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tab: [tab.page]});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
@@ -134,14 +134,17 @@ function Core(properties)
                 if (tab && tab.type == "console")
                 {
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.page});
+                    this.console.onOpened.dispatch({console: false, from: "CORE", tab: [tab.id, tab.page]});
                 }
                 else if (settings.type == "separate")
                 {
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tab: [tab.id]});
                 }
                 else
                 {
                     chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
+                    this.console.onClosed.dispatch({console: false, from: "CORE", tab: [tab.id]});
                 }
             }
         }).bind(this)
