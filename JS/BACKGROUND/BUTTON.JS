@@ -4,13 +4,19 @@
 function Button()
 {
     /**
+     * Size of setting icon
+     * @type {Number}
+     */
+    var iconSize;
+
+    /**
      * Changes the main button picture
      * @param {String} type  - type of picture to set
      * @param {Number} tabId - id of the tab to update the icon
      */
     function changeIcon(type, tabId)
     {
-        chrome.browserAction.setIcon({path: "../IMG/" + type + "24.PNG", tabId: tabId});
+        chrome.browserAction.setIcon({path: "../IMG/" + type + iconSize + ".PNG", tabId: tabId});
     }
 
     /**
@@ -39,5 +45,24 @@ function Button()
             {
                 changeIcon(state, tabId);
             }).bind(this))
+    }
+
+    var size, inch = document.createElement("div");
+
+    inch.style.width = "1IN";
+    document.body.appendChild(inch);
+    size = inch.offsetWidth / 4;
+
+    if (size > 28)
+    {
+        iconSize = 32;
+    }
+    else if (size > 18)
+    {
+        iconSize = 24;
+    }
+    else
+    {
+        iconSize = 16;
     }
 }
