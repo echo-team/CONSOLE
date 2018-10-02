@@ -159,7 +159,7 @@ function Core(properties)
                     this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.page]});
                 }
             }
-            else if (request.type == "CONSOLE_INIT")
+            else if (request.type == "INIT")
             {
                 var tab =
                     {
@@ -169,15 +169,16 @@ function Core(properties)
                         page: null
                     };
 
-                chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: tab.type});
+                chrome.tabs.sendMessage(sender.tab.id, {type: "INIT", tabType: tab.type});
                 tabs.push(tab);
+                console.log("INIT");
             }
-            else if (request.type == "CONSOLE_READY")
+            else if (request.type == "READY")
             {
                 tab.active = true;
                 this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.id]});
             }
-            else if (request.type == "PAGE_CLOSED")
+            else if (request.type == "CLOSED")
             {
                 if (tab.console != null && tab.console != tab.id)
                 {
