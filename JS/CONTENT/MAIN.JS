@@ -4,7 +4,7 @@ function init(request)
     {
         if (request.tabType == "console")
         {
-            new Console({pageTabId: request.pageTabId, parent: document.body});
+            new Console({parent: document.body});
             chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
 
             window.addEventListener("beforeunload",

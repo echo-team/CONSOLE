@@ -144,7 +144,7 @@ function Core(properties)
                 {
                     tab.page = sender.tab.openerTabId;
                     tabs.findObject("id", tab.page).console = tab.id;
-                    this.console.onStateChanged.dispatch({console: true, from: "CORE", tab: [tab.page, tab.id]});
+                    this.console.onStateChanged.dispatch({console: true, tab: [tab.page, tab.id]});
                 }
                 else
                 {
@@ -156,7 +156,7 @@ function Core(properties)
                     }
 
                     page.console = null;
-                    this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.page]});
+                    this.console.onStateChanged.dispatch({console: false, tab: [tab.page]});
                 }
             }
             else if (request.type == "INIT")
@@ -175,7 +175,7 @@ function Core(properties)
             else if (request.type == "READY")
             {
                 tab.active = true;
-                this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.id]});
+                this.console.onStateChanged.dispatch({console: (tab.console != null || tab.page != null), tab: [tab.id]});
             }
             else if (request.type == "CLOSED")
             {
