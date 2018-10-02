@@ -37,6 +37,27 @@ function Core(properties)
     };
 
     /**
+     * Founds type of the given tab by its URL and standart settings
+     * @param  {String} URL - URL of tab to get type
+     * @return {String}     - "console", "page" or "mixed"
+     */
+    function getTabType(URL)
+    {
+        if (URL == EXTENSION_CONSOLEPAGE)
+        {
+            return "console";
+        }
+        else if (settings.type == "separate")
+        {
+            return "page";
+        }
+        else if (settings.type == "mixed")
+        {
+            return "mixed";
+        }
+    }
+
+    /**
      * Opens a new console bound to given tab
      * @param {Number} tab - index of tab to which console will be bound
      */
@@ -115,104 +136,56 @@ function Core(properties)
     chrome.runtime.onMessage.addListener(
         (function(request, sender)
         {
+            var tab = tabs.findObject("id", sender.tab.id);
+
             if (request.type == "CONSOLE_STATE")
             {
-                var tab = tabs.findObject("id", sender.tab.id);
-
                 if (request.console)
                 {
-                    tab.console = sender.tab.id;
-                    this.console.onStateChanged.dispatch({console: true, from: "CORE", tab: [tab.page, tab.console]});
+                    tab.page = sender.tab.openerTabId;
+                    tabs.findObject("id", tab.page).console = tab.id;
+                    this.console.onStateChanged.dispatch({console: true, from: "CORE", tab: [tab.page, tab.id]});
                 }
                 else
                 {
-                    tab.console = null;
+                    var page = tabs.findObject("id", tab.page);
+
+                    if (!page)
+                    {
+                        return;
+                    }
+
+                    page.console = null;
                     this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.page]});
                 }
             }
             else if (request.type == "CONSOLE_INIT")
             {
-                var tab = tabs.findObject("id", sender.tab.id);
+                var tab =
+                    {
+                        id: sender.tab.id,
+                        type: getTabType(sender.tab.url),
+                        console: null,
+                        page: null
+                    };
 
-                if (tab && tab.type == "console")
-                {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "console", pageTabId: tab.page});
-                }
-                else if (settings.type == "separate")
-                {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "page"});
-                }
-                else
-                {
-                    chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: "mixed"});
-                }
-
+                chrome.tabs.sendMessage(sender.tab.id, {type: "CONSOLE_INIT", tabType: tab.type});
+                tabs.push(tab);
+            }
+            else if (request.type == "CONSOLE_READY")
+            {
                 tab.active = true;
                 this.console.onStateChanged.dispatch({console: false, from: "CORE", tab: [tab.id]});
             }
-        }).bind(this)
-    );
-
-    /**
-     * Updates tabs[] with new tab (page or console)
-     */
-    chrome.tabs.onUpdated.addListener(
-        (function(tabId, change, tab)
-        {
-            if (tabs.findObject("id", tabId))
+            else if (request.type == "PAGE_CLOSED")
             {
-                return;
-            }
-
-            var terminal, page, type;
-
-            if (tab.url == EXTENSION_CONSOLEPAGE)
-            {
-                terminal = tab.id;
-                page = tab.openerTabId;                   //FIXME - openerTabId may be not set if page tab was already closed
-                type = "console";
-                tabs.findObject("id", page).console = tab.id;
-            }
-            else
-            {
-                terminal = null;
-                page = tab.id;
-                type = settings.type == "mixed" ? "mixed" : "page";
-            }
-
-            tabs.push(
+                if (tab.console != null && tab.console != tab.id)
                 {
-                    id: tab.id,
-                    console: terminal,
-                    page: page,
-                    type: type,
-                    active: false
-                });
+                    chrome.tabs.remove(tab.console);
+                }
 
-        }).bind(this)
-    );
-
-    /**
-     * Updates tabs[] with removing closed tabs
-     * Removes unpaged console tabs
-     */
-    chrome.tabs.onRemoved.addListener(
-        (function(tabId)
-        {
-            var tab = tabs.findObject("id", tabId),
-                page = tabs.findObject("id", tab.page);
-
-            if (tab.type == "page" && tab.console != null)
-            {
-                chrome.tabs.remove(tab.console);
+                tabs.splice(tabs.indexOf(tab), 1);
             }
-            else if (tab.type == "console" && page)
-            {
-                page.console = null;
-            }
-
-            tabs.splice(tabs.indexOf(tab), 1);
-
         }).bind(this)
     );
 
@@ -245,7 +218,7 @@ function Core(properties)
         ['blocking', 'responseHeaders']
     );
 
-    chrome.webNavigation.onBeforeNavigate.addListener(
+    /*chrome.webNavigation.onBeforeNavigate.addListener(
         (function(event)
         {
             if (event.parentFrameId == 0)
@@ -261,5 +234,5 @@ function Core(properties)
                 );
             }
         }).bind(this)
-    );
+    );*/
 }

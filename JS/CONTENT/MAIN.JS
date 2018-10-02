@@ -5,6 +5,7 @@ function init(request)
         if (request.tabType == "console")
         {
             new Console({pageTabId: request.pageTabId, parent: document.body});
+            chrome.runtime.sendMessage({type: "CONSOLE_READY"});
             chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
 
             window.addEventListener("beforeunload",
@@ -17,6 +18,7 @@ function init(request)
         else if (request.tabType == "page")
         {
             new Page();
+            chrome.runtime.sendMessage({type: "CONSOLE_READY"});
         }
         else if (request.tabType == "mixed")
         {
@@ -32,11 +34,20 @@ function init(request)
             }
 
             new Separator({URL: URL});
+            chrome.runtime.sendMessage({type: "CONSOLE_READY"});
         }
 
-        chrome.runtime.onMessage.removeListener(init.bind(this));
+        window.addEventListener("beforeunload",
+            function(event)
+            {
+                chrome.runtime.sendMessage({type: "PAGE_CLOSED"});
+            }
+        );
+
+        console.log("INIT");
+        chrome.runtime.onMessage.removeListener(init);
     }
 }
 
-chrome.runtime.onMessage.addListener(init.bind(this));
+chrome.runtime.onMessage.addListener(init);
 chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
