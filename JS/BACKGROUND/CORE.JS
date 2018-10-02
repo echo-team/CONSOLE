@@ -171,7 +171,6 @@ function Core(properties)
 
                 chrome.tabs.sendMessage(sender.tab.id, {type: "INIT", tabType: tab.type});
                 tabs.push(tab);
-                console.log("INIT");
             }
             else if (request.type == "READY")
             {
