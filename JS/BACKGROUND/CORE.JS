@@ -23,7 +23,7 @@ function Core(properties)
     var settings =
     {
         activateConsole: true,
-        type: "separate"
+        type: "mixed"
     }
 
     /**
@@ -142,7 +142,15 @@ function Core(properties)
             {
                 if (request.console)
                 {
-                    tab.page = sender.tab.openerTabId;
+                    if (tab.type == "console")
+                    {
+                        tab.page = sender.tab.openerTabId;
+                    }
+                    else
+                    {
+                        tab.page = tab.id;
+                    }
+
                     tabs.findObject("id", tab.page).console = tab.id;
                     this.console.onStateChanged.dispatch({console: true, tab: [tab.page, tab.id]});
                 }
