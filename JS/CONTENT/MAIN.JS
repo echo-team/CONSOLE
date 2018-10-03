@@ -1,10 +1,10 @@
 function init(request)
 {
-    if (request.type == "CONSOLE_INIT")
+    if (request.type == "INIT")
     {
         if (request.tabType == "console")
         {
-            new Console({pageTabId: request.pageTabId, parent: document.body});
+            new Console({parent: document.body});
             chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
 
             window.addEventListener("beforeunload",
@@ -34,9 +34,17 @@ function init(request)
             new Separator({URL: URL});
         }
 
-        chrome.runtime.onMessage.removeListener(init.bind(this));
+        window.addEventListener("beforeunload",
+            function(event)
+            {
+                chrome.runtime.sendMessage({type: "CLOSED"});
+            }
+        );
+
+        chrome.runtime.sendMessage({type: "READY"});
+        chrome.runtime.onMessage.removeListener(init);
     }
 }
 
-chrome.runtime.onMessage.addListener(init.bind(this));
-chrome.runtime.sendMessage({type: "CONSOLE_INIT"});
+chrome.runtime.onMessage.addListener(init);
+chrome.runtime.sendMessage({type: "INIT"});

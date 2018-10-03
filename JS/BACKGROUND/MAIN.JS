@@ -14,17 +14,10 @@ var core = new Core(),
  * Button initialization
  */
 
-core.console.onOpened.addEventListener(
+core.console.onStateChanged.addEventListener(
     function(event)
     {
-        button.changeState(true, event.tab);
-    }
-);
-
-core.console.onClosed.addEventListener(
-    function(event)
-    {
-        button.changeState(false, event.tab);
+        button.changeState(event.console, event.tab);
     }
 );
 
