@@ -10,10 +10,7 @@ function Separator(properties)
      */
     var DOM =
         {
-            parent: null,
-            wrap: null,
-            container: null,
-            page: null
+            separator: null
         }
 
     /**
@@ -21,23 +18,15 @@ function Separator(properties)
      */
     var CSS =
         {
-            wrap:
+            separator:
             {
-                console: "SEPARATOR__WRAP--CONSOLE",
-                top: "SEPARATOR__WRAP--TOP",
-                bottom: "SEPARATOR__WRAP--BOTTOM",
-                left: "SEPARATOR__WRAP--LEFT",
-                right: "SEPARATOR__WRAP--RIGHT",
-                common: "SEPARATOR__WRAP"
+                normal: "SEPARATOR",
+                shrinked: "SEPARATOR--SHRINKED"
             },
-            container: "SEPARATOR__CONTAINER",
-            page:
+            orientation:
             {
-                top: "SEPARATOR__PAGE--TOP",
-                bottom: "SEPARATOR__PAGE--BOTTOM",
-                left: "SEPARATOR__PAGE--LEFT",
-                right: "SEPARATOR__PAGE--RIGHT",
-                common: "SEPARATOR__PAGE"
+                album: "SEPARATOR--ALBUM",
+                portrait: "SEPARATOR--PORTRAIT"
             }
         }
 
@@ -56,16 +45,18 @@ function Separator(properties)
         if (["LEFT", "RIGHT"].indexOf(position) > -1)
         {
             customConsole.setOrientation("portrait");
+            customConsole.setSize("500PX", "100%");
         }
         else
         {
             customConsole.setOrientation("album");
+            customConsole.setSize("100%", "350PX");
         }
 
-        position = position.toLowerCase();
+        /*position = position.toLowerCase();
 
         DOM.wrap.classList.add(CSS.wrap[position]);
-        DOM.page.classList.add(CSS.page[position]);
+        DOM.page.classList.add(CSS.page[position]);*/
     }
 
     /**
@@ -127,17 +118,12 @@ function Separator(properties)
         }
     }
 
-    function createPage(event)
-    {
-        new Page();
-    }
-
     /**
      * Opens console
      */
     this.openConsole = function()
     {
-        DOM.wrap.classList.add(CSS.wrap.console);
+        DOM.separator.setCSS(CSS.separator.shrinked);
     }
 
     /**
@@ -145,21 +131,17 @@ function Separator(properties)
      */
     this.closeConsole = function()
     {
-        DOM.wrap.classList.remove(CSS.wrap.console);
+        DOM.separator.removeCSS(CSS.separator.shrinked);
     }
 
     /**
      * Creating DOM tree of the class
      */
-    DOM.parent = document.body;
-    DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
-    DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
-    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
-    DOM.page.setEventListeners({"startloading": [createPage.bind(this), setTabName.bind(this)]});
+    DOM.separator = document.body;
+    DOM.separator.setCSS(CSS.separator.normal);
 
-    customConsole = new Console({parent: DOM.container});
+    customConsole = properties.console;
     setConsolePosition("LEFT");
-
 
     /**
      * Setting messaging manager

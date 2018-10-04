@@ -11,10 +11,19 @@ function Console(properties)
     var DOM =
         {
             parent: null,
+            console: null,
             tabs:
             {
                 main: null
             }
+        }
+
+    /**
+     * CSS styles of the class
+     */
+    var CSS =
+        {
+            console: "CONSOLE"
         }
 
     /**
@@ -32,6 +41,17 @@ function Console(properties)
     }
 
     /**
+     * Setts size of the console
+     * @param {String} width - width to set
+     * @param {String} height - height to set
+     */
+    this.setSize = function(width, height)
+    {
+        DOM.console.style.width = width;
+        DOM.console.style.height = height;
+    }
+
+    /**
      * Setts interface preset
      * @param {String} preset - preset to set
      */
@@ -44,11 +64,12 @@ function Console(properties)
      * Creating DOM of the class
      */
     DOM.parent = properties.parent;
+    DOM.console = DOM.parent.newChildElement("div", {classList: CSS.console});
 
     /**
      * Creating interface and the main tab
      */
-    interface = new Interface({parent: DOM.parent});
+    interface = new Interface({parent: DOM.console});
     interface.load("aside");
 
     interface.newSection("Архитектура", "Инструменты");

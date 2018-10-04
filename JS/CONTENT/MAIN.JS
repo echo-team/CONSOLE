@@ -20,18 +20,12 @@ function init(request)
         }
         else if (request.tabType == "mixed")
         {
-            var URL = window.location.href,
-                attributes = document.documentElement.attributes;
-
             window.stop();
-            document.documentElement.innerHTML = "";
 
-            for (var counter = 0; counter < attributes.length; counter++)
-            {
-                document.documentElement.removeAttribute(attributes[counter].name);
-            }
+            var page = new Page(),
+                customConsole = new Console({parent: document.body});
 
-            new Separator({URL: URL});
+            new Separator({URL: URL, console: customConsole});
         }
 
         window.addEventListener("beforeunload",
