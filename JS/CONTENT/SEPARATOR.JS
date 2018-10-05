@@ -23,6 +23,7 @@ function Separator(properties)
             separator:
             {
                 normal: "SEPARATOR",
+                animate: "SEPARATOR--ANIMATED",
                 shrinked: "SEPARATOR--SHRINKED"
             },
             orientation:
@@ -68,7 +69,6 @@ function Separator(properties)
      */
     function changeConsoleWidth(width)
     {
-        console.log(DOM.separator.parentNode.offsetWidth, consoleSize.width);
         consoleSize.width = consoleSize.width || width;
         DOM.separator.style.width = consoleSize.width + DOM.separator.parentNode.offsetWidth + "PX";
         customConsole.setSize(consoleSize.width + "PX", "100%");
@@ -189,7 +189,10 @@ function Separator(properties)
     DOM.separator.setCSS(CSS.separator.normal);
 
     customConsole = properties.console;
-    setConsolePosition("LEFT");
+    setConsolePosition("RIGHT");
+
+    document.unquantCSS();
+    DOM.separator.setCSS(CSS.separator.animate);
 
     /**
      * Setting messaging manager

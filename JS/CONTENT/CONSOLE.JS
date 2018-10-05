@@ -23,7 +23,8 @@ function Console(properties)
      */
     var CSS =
         {
-            console: "CONSOLE"
+            console: "CONSOLE",
+            hidden: "HIDDEN"
         }
 
     /**
