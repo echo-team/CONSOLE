@@ -1,7 +1,9 @@
 /**
  * Console class inserting to a page
- * @param {Object} properties     - settings of the class
- * @param {String} properties.URL - URL link of the target page to monitor with console
+ * @param {Object} properties         - settings of the class
+ * @param {String} properties.URL     - URL link of the target page to monitor with console
+ * @param {Object} properties.console - instance of Console class
+ * @param {Object} properties.page    - instance of Page class
  */
 function Separator(properties)
 {
@@ -25,8 +27,10 @@ function Separator(properties)
             },
             orientation:
             {
-                album: "SEPARATOR--ALBUM",
-                portrait: "SEPARATOR--PORTRAIT"
+                left: "SEPARATOR--LEFT",
+                top: "SEPARATOR--TOP",
+                right: "SEPARATOR--RIGHT",
+                bottom: "SEPARATOR--BOTTOM"
             }
         }
 
@@ -37,26 +41,70 @@ function Separator(properties)
     var customConsole;
 
     /**
-     * Sets position of the console
-     * @param {String} position - position of the console: top, bottom, left or right
+     * Instance of Page class
+     * @type {Console}
      */
-    function setConsolePosition(position)
+    var customPage;
+
+    /**
+     * Sizes of custom Console instance
+     * @type {Object}
+     */
+    var consoleSize =
+        {
+            width: 420,
+            height: 300
+        }
+
+    /**
+     * Current orientation of the console (LEFT, RIGTH, TOP or BOTTOM)
+     * @type {String}
+     */
+    var currentOrientation = "LEFT";
+
+    /**
+     * Changes width of the custom Console instance and separator
+     * @param {Number} width  - width of custom Console instance
+     */
+    function changeConsoleWidth(width)
     {
-        if (["LEFT", "RIGHT"].indexOf(position) > -1)
+        console.log(DOM.separator.parentNode.offsetWidth, consoleSize.width);
+        consoleSize.width = consoleSize.width || width;
+        DOM.separator.style.width = consoleSize.width + DOM.separator.parentNode.offsetWidth + "PX";
+        customConsole.setSize(consoleSize.width + "PX", "100%");
+    }
+
+    /**
+     * Changes height of the custom Console instance and separator
+     * @param {Number} height  - height of custom Console instance
+     */
+    function changeConsoleHeight(height)
+    {
+        consoleSize.height = consoleSize.height || height;
+        DOM.separator.style.height = consoleSize.height + DOM.separator.parentNode.offsetHeight + "PX";
+        customConsole.setSize("100%", consoleSize.height + "PX");
+    }
+
+    /**
+     * Sets position of the console
+     * @param {String} orientation - orientation of the console: top, bottom, left or right
+     */
+    function setConsolePosition(orientation)
+    {
+        if (["LEFT", "RIGHT"].indexOf(orientation) > -1)
         {
             customConsole.setOrientation("portrait");
-            customConsole.setSize("500PX", "100%");
+            changeConsoleWidth(consoleSize.width);
         }
         else
         {
             customConsole.setOrientation("album");
-            customConsole.setSize("100%", "350PX");
+            changeConsoleHeight(consoleSize.height);
         }
 
-        /*position = position.toLowerCase();
-
-        DOM.wrap.classList.add(CSS.wrap[position]);
-        DOM.page.classList.add(CSS.page[position]);*/
+        currentOrientation = orientation;
+        orientation = orientation.toLowerCase();
+        DOM.separator.classList.add(CSS.orientation[orientation]);
     }
 
     /**
