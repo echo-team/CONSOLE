@@ -189,7 +189,7 @@ function Separator(properties)
     DOM.separator.setCSS(CSS.separator.normal);
 
     customConsole = properties.console;
-    setConsolePosition("RIGHT");
+    setConsolePosition("LEFT");
 
     document.unquantCSS();
     DOM.separator.setCSS(CSS.separator.animate);
