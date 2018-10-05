@@ -32,6 +32,11 @@ function Separator(properties)
                 top: "SEPARATOR--TOP",
                 right: "SEPARATOR--RIGHT",
                 bottom: "SEPARATOR--BOTTOM"
+            },
+            varuables:
+            {
+                separatorWidth: "--SEPARATOR-WIDTH",
+                separatorHeight: "--SEPARATOR-HEIGHT"
             }
         }
 
@@ -70,7 +75,8 @@ function Separator(properties)
     function changeConsoleWidth(width)
     {
         consoleSize.width = consoleSize.width || width;
-        DOM.separator.style.width = consoleSize.width + DOM.separator.parentNode.offsetWidth + "PX";
+        DOM.separator.style.setProperty(CSS.varuables.separatorWidth, consoleSize.width + "PX");
+        DOM.separator.style.setProperty(CSS.varuables.separatorHeight, "0PX");
         customConsole.setSize(consoleSize.width + "PX", "100%");
     }
 
@@ -81,7 +87,8 @@ function Separator(properties)
     function changeConsoleHeight(height)
     {
         consoleSize.height = consoleSize.height || height;
-        DOM.separator.style.height = consoleSize.height + DOM.separator.parentNode.offsetHeight + "PX";
+        DOM.separator.style.setProperty(CSS.varuables.separatorHeight, consoleSize.height + "PX");
+        DOM.separator.style.setProperty(CSS.varuables.separatorWidth, "0PX");
         customConsole.setSize("100%", consoleSize.height + "PX");
     }
 
@@ -189,7 +196,7 @@ function Separator(properties)
     DOM.separator.setCSS(CSS.separator.normal);
 
     customConsole = properties.console;
-    setConsolePosition("LEFT");
+    setConsolePosition("TOP");
 
     document.unquantCSS();
     DOM.separator.setCSS(CSS.separator.animate);
