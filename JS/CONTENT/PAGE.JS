@@ -44,6 +44,12 @@ function Page()
      */
     function setTabName()
     {
+        if (DOM.page.contentDocument.title)
+        {
+            setTitleListener(DOM.page.contentDocument.getElementsByTagName("title")[0]);
+            return;
+        }
+
         var titleWaiter = new MutationObserver(
             (function(mutations)
             {
@@ -95,5 +101,13 @@ function Page()
     /**
      * Setting up a title-changing listener
      */
-    setTabName();
+    var iframeLoadingInterval = setInterval(
+         (function()
+         {
+             if (DOM.page.contentWindow.location.href != "about:blank" && DOM.page.contentDocument.head)
+             {
+                 clearInterval(iframeLoadingInterval);
+                 setTabName();
+             }
+         }).bind(this), 100);
 }
