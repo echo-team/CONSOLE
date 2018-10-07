@@ -22,6 +22,58 @@ function Page()
         }
 
     /**
+     * Sets DOM mutation listener for reacting on page header changing
+     * @param {Element} title - DOM title element
+     */
+    function setTitleListener(title)
+    {
+        document.title = title.innerHTML;
+
+        var titleListener = new MutationObserver(
+            (function(title)
+            {
+                document.title = title.innerHTML;
+            }).bind(null, title)
+        );
+
+        titleListener.observe(title, {characterData: true, childList: true, subtree: true});
+    }
+
+    /**
+     * Sets current tab name from iframe page name
+     */
+    function setTabName()
+    {
+        var titleWaiter = new MutationObserver(
+            (function(mutations)
+            {
+                mutations.forEach(
+                    (function(mutation)
+                    {
+                        if (!mutation.addedNodes)
+                        {
+                            return;
+                        }
+
+                        mutation.addedNodes.forEach(
+                            (function(node)
+                            {
+                                if (node.tagName == "TITLE")
+                                {
+                                    titleWaiter.disconnect();
+                                    setTitleListener(node);
+                                }
+                            }).bind(this)
+                        );
+                    }).bind(this)
+                );
+            }).bind(this)
+        );
+
+        titleWaiter.observe(DOM.page.contentDocument, {childList: true, subtree: true});
+    }
+
+    /**
      * Removing loaded DOM and attributes of <html>
      */
     var URL = window.location.href,
@@ -39,4 +91,9 @@ function Page()
      */
     DOM.page = document.body.newChildElement("iframe", {classList: CSS.page});
     DOM.page.contentWindow.location.href = window.location.href;
+
+    /**
+     * Setting up a title-changing listener
+     */
+    setTabName();
 }
