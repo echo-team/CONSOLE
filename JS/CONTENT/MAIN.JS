@@ -4,9 +4,10 @@ function init(request)
     {
         if (request.tabType == "console")
         {
-            new Console({parent: document.body});
-            chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
+            var customConsole = new Console({parent: document.body});
 
+            customConsole.setSize("100%", "100%");
+            chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
             window.addEventListener("beforeunload",
                 function(event)
                 {
@@ -20,8 +21,6 @@ function init(request)
         }
         else if (request.tabType == "mixed")
         {
-            window.stop();
-
             var page = new Page(),
                 customConsole = new Console({parent: document.body});
 
@@ -40,5 +39,6 @@ function init(request)
     }
 }
 
+window.stop();
 chrome.runtime.onMessage.addListener(init);
 chrome.runtime.sendMessage({type: "INIT"});

@@ -23,7 +23,7 @@ function Core(properties)
     var settings =
     {
         activateConsole: true,
-        type: "mixed"
+        type: "separate"
     }
 
     /**

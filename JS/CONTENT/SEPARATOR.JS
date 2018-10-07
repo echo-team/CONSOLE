@@ -196,7 +196,7 @@ function Separator(properties)
     DOM.separator.setCSS(CSS.separator.normal);
 
     customConsole = properties.console;
-    setConsolePosition("TOP");
+    setConsolePosition("RIGHT");
 
     document.unquantCSS();
     DOM.separator.setCSS(CSS.separator.animate);

@@ -1,3 +1,17 @@
+HTML
+{
+    WIDTH: 100%;
+    HEIGHT: 100%;
+}
+
+BODY
+{
+    DISPLAY: FLEX;
+    WIDTH: 100%;
+    HEIGHT: 100%;
+    MARGIN: 0;
+}
+
 .HIDDEN
 {
     DISPLAY: NONE;
