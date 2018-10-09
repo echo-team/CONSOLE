@@ -12,7 +12,8 @@ function Separator(properties)
      */
     var DOM =
         {
-            separator: null
+            separator: null,
+            resizer: null
         }
 
     /**
@@ -32,6 +33,14 @@ function Separator(properties)
                 top: "SEPARATOR--TOP",
                 right: "SEPARATOR--RIGHT",
                 bottom: "SEPARATOR--BOTTOM"
+            },
+            resizer:
+            {
+                normal: "SEPARATOR__RESIZER",
+                left: "SEPARATOR__RESIZER--LEFT",
+                top: "SEPARATOR__RESIZER--TOP",
+                right: "SEPARATOR__RESIZER--RIGHT",
+                bottom: "SEPARATOR__RESIZER--BOTTOM"
             },
             varuables:
             {
@@ -112,6 +121,7 @@ function Separator(properties)
         currentOrientation = orientation;
         orientation = orientation.toLowerCase();
         DOM.separator.classList.add(CSS.orientation[orientation]);
+        DOM.resizer.classList.add(CSS.resizer[orientation]);
     }
 
     /**
@@ -135,6 +145,7 @@ function Separator(properties)
      */
     DOM.separator = document.body;
     DOM.separator.setCSS(CSS.separator.normal);
+    DOM.resizer = DOM.separator.newChildElement("div", {classList: CSS.resizer.normal});
 
     customConsole = properties.console;
     setConsolePosition("RIGHT");
