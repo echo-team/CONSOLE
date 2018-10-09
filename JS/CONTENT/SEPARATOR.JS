@@ -69,7 +69,13 @@ function Separator(properties)
         {
             width: 420,
             height: 300
-        }
+        };
+
+    /**
+     * State of the resize panel
+     * @type {Bool}
+     */
+    var resizerIsActive = false;
 
     /**
      * Current orientation of the console (LEFT, RIGTH, TOP or BOTTOM)
@@ -83,7 +89,7 @@ function Separator(properties)
      */
     function changeConsoleWidth(width)
     {
-        consoleSize.width = consoleSize.width || width;
+        consoleSize.width = width;
         DOM.separator.style.setProperty(CSS.varuables.separatorWidth, consoleSize.width + "PX");
         DOM.separator.style.setProperty(CSS.varuables.separatorHeight, "0PX");
         customConsole.setSize(consoleSize.width + "PX", "100%");
@@ -95,10 +101,50 @@ function Separator(properties)
      */
     function changeConsoleHeight(height)
     {
-        consoleSize.height = consoleSize.height || height;
+        consoleSize.height = height;
         DOM.separator.style.setProperty(CSS.varuables.separatorHeight, consoleSize.height + "PX");
         DOM.separator.style.setProperty(CSS.varuables.separatorWidth, "0PX");
         customConsole.setSize("100%", consoleSize.height + "PX");
+    }
+
+    /**
+     * Resizes custom Console when user drags resizer element
+     * @param {Object} event - event of
+     */
+    function resize(event)
+    {
+        if (currentOrientation == "LEFT")
+        {
+            changeConsoleWidth(event.pageX);
+        }
+        else if (currentOrientation == "RIGHT")
+        {
+            changeConsoleWidth(DOM.separator.clientWidth - event.pageX);
+        }
+        else if (currentOrientation == "TOP")
+        {
+            changeConsoleHeight(event.pageY);
+        }
+        else if (currentOrientation == "BOTTOM")
+        {
+            changeConsoleHeight(DOM.separator.clientHeight - event.pageY);
+        }
+    }
+
+    /**
+     * Switches resize panel state
+     */
+    function toggleResize()
+    {
+        DOM.separator.addEventListener("mousemove", resize.bind(this));
+        console.log("ADDED");
+
+        DOM.separator.onmouseup = function()
+        {
+            DOM.separator.removeEventListener("mousemove", resize.bind(this));
+            DOM.separator.onmouseup = null;
+            console.log("REMOVED");
+        }
     }
 
     /**
@@ -145,7 +191,15 @@ function Separator(properties)
      */
     DOM.separator = document.body;
     DOM.separator.setCSS(CSS.separator.normal);
-    DOM.resizer = DOM.separator.newChildElement("div", {classList: CSS.resizer.normal});
+    DOM.resizer = DOM.separator.newChildElement("div",
+        {
+            classList: CSS.resizer.normal,
+            eventListeners: {mousedown: toggleResize.bind(this)}
+        });
+    DOM.resizer.ondragstart = function()
+    {
+        return false;
+    }
 
     customConsole = properties.console;
     setConsolePosition("RIGHT");
