@@ -137,13 +137,13 @@ function Separator(properties)
     function toggleResize()
     {
         DOM.separator.addEventListener("mousemove", resize.bind(this));
-        console.log("ADDED");
+        customPage.toggleInnerMouseEvents(true);
 
         DOM.separator.onmouseup = function()
         {
             DOM.separator.removeEventListener("mousemove", resize.bind(this));
             DOM.separator.onmouseup = null;
-            console.log("REMOVED");
+            customPage.toggleInnerMouseEvents(false);
         }
     }
 
@@ -201,6 +201,7 @@ function Separator(properties)
         return false;
     }
 
+    customPage = properties.page;
     customConsole = properties.console;
     setConsolePosition("RIGHT");
 

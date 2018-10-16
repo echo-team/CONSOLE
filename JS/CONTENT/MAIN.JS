@@ -21,10 +21,10 @@ function init(request)
         }
         else if (request.tabType == "mixed")
         {
-            var page = new Page(),
+            var customPage = new Page(),
                 customConsole = new Console({parent: document.body});
 
-            new Separator({URL: URL, console: customConsole});
+            new Separator({URL: URL, console: customConsole, page: customPage});
         }
 
         window.addEventListener("beforeunload",

@@ -18,7 +18,8 @@ function Page()
      */
     var CSS =
         {
-            page: "PAGE"
+            page: "PAGE",
+            ignoreInnerMouseEvents: "IGNOREINNERMOUSEEVENTS"
         }
 
     /**
@@ -77,6 +78,18 @@ function Page()
         );
 
         titleWaiter.observe(DOM.page.contentDocument, {childList: true, subtree: true});
+    }
+
+    this.toggleInnerMouseEvents = function(flag)
+    {
+        if (flag)
+        {
+            DOM.page.classList.add(CSS.ignoreInnerMouseEvents);
+        }
+        else
+        {
+            DOM.page.classList.remove(CSS.ignoreInnerMouseEvents);
+        }
     }
 
     /**
