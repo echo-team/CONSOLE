@@ -46,7 +46,8 @@ function Separator(properties)
             {
                 separatorWidth: "--SEPARATOR-WIDTH",
                 separatorHeight: "--SEPARATOR-HEIGHT"
-            }
+            },
+            noTextSelection: "NOTEXTSELECTION"
         }
 
     /**
@@ -140,7 +141,8 @@ function Separator(properties)
      */
     function turnResizeOff()
     {
-        console.log("MOUSEUP");
+        DOM.separator.classList.remove(CSS.noTextSelection);
+
         customPage.toggleInnerMouseEvents(false);
         DOM.separator.removeEventListener("mousemove", resizerBoundedFunctions.resize);
         DOM.separator.removeEventListener("mouseup", resizerBoundedFunctions.off);
@@ -151,6 +153,8 @@ function Separator(properties)
      */
     function turnResizeOn()
     {
+        DOM.separator.classList.add(CSS.noTextSelection);
+
         resizerBoundedFunctions.off = turnResizeOff.bind(this);
         resizerBoundedFunctions.resize = resize.bind(this);
 
