@@ -72,10 +72,14 @@ function Separator(properties)
         };
 
     /**
-     * State of the resize panel
-     * @type {Bool}
+     * Store of functions with context of resizer
+     * @type {Object}
      */
-    var resizerIsActive = false;
+    var resizerBoundedFunctions =
+        {
+            off: null,
+            resize: null
+        };
 
     /**
      * Current orientation of the console (LEFT, RIGTH, TOP or BOTTOM)
@@ -132,19 +136,27 @@ function Separator(properties)
     }
 
     /**
-     * Switches resize panel state
+     * Switches ability to resize console off
      */
-    function toggleResize()
+    function turnResizeOff()
     {
-        DOM.separator.addEventListener("mousemove", resize.bind(this));
-        customPage.toggleInnerMouseEvents(true);
+        console.log("MOUSEUP");
+        customPage.toggleInnerMouseEvents(false);
+        DOM.separator.removeEventListener("mousemove", resizerBoundedFunctions.resize);
+        DOM.separator.removeEventListener("mouseup", resizerBoundedFunctions.off);
+    }
 
-        DOM.separator.onmouseup = function()
-        {
-            DOM.separator.removeEventListener("mousemove", resize.bind(this));
-            DOM.separator.onmouseup = null;
-            customPage.toggleInnerMouseEvents(false);
-        }
+    /**
+     * Switches ability to resize console on
+     */
+    function turnResizeOn()
+    {
+        resizerBoundedFunctions.off = turnResizeOff.bind(this);
+        resizerBoundedFunctions.resize = resize.bind(this);
+
+        customPage.toggleInnerMouseEvents(true);
+        DOM.separator.addEventListener("mousemove", resizerBoundedFunctions.resize);
+        DOM.separator.addEventListener("mouseup", resizerBoundedFunctions.off);
     }
 
     /**
@@ -194,12 +206,8 @@ function Separator(properties)
     DOM.resizer = DOM.separator.newChildElement("div",
         {
             classList: CSS.resizer.normal,
-            eventListeners: {mousedown: toggleResize.bind(this)}
+            eventListeners: {mousedown: turnResizeOn.bind(this)}
         });
-    DOM.resizer.ondragstart = function()
-    {
-        return false;
-    }
 
     customPage = properties.page;
     customConsole = properties.console;
