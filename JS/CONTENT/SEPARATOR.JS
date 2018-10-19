@@ -68,6 +68,7 @@ function Separator(properties)
             customConsole.setOrientation("album");
         }
 
+        customConsole.setPosition(orientation);
         DOM.separator.classList.add(CSS.orientation[orientation.toLowerCase()]);
     }
 
@@ -95,6 +96,7 @@ function Separator(properties)
 
     customPage = properties.page;
     customConsole = properties.console;
+
     setConsolePosition("RIGHT");
 
     document.unquantCSS();

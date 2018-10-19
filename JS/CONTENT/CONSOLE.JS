@@ -40,6 +40,20 @@ function Console(properties)
     var resizer;
 
     /**
+     * Setts position of console to calculate resizer position and init resizer if it wasn't initted
+     * @param {String} position - position of the console ("LEFT", "RIGHT", "TOP" or "BOTTOM")
+     */
+    this.setPosition = function(position)
+    {
+        if (!resizer)
+        {
+            resizer = new Resizer({target: DOM.console, CSSWidth: "--CONSOLE-WIDTH", CSSHeight: "--CONSOLE-HEIGHT"});
+        }
+
+        resizer.setPosition(position);
+    }
+
+    /**
      * Setts interface orientation
      * @param {String} orientation - orientation to set for current preset
      */
@@ -73,9 +87,4 @@ function Console(properties)
     interface.newSection("Консоль", "Инструменты");
     interface.newSection("Палитра", "Инструменты");
     interface.newSection("Настройки", "Прочее");
-
-    /**
-     * Creating resizer panel
-     */
-    resizer = new Resizer({target: DOM.console, CSSWidth: "--CONSOLE-WIDTH", CSSHeight: "--CONSOLE-HEIGHT"});
 }

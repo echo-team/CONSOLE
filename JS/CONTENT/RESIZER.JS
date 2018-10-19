@@ -92,6 +92,21 @@ function Resizer(properties)
     }
 
     /**
+     * Setts align of resizer panel
+     * @param {String} newPosition - position of the console ("LEFT", "RIGHT", "TOP" or "BOTTOM") to set
+     */
+    this.setPosition = function(newPosition)
+    {
+        if (!position)
+        {
+            DOM.panel.classList.remove(CSS[position.toLowerCase()]);
+        }
+
+        position = newPosition;
+        DOM.panel.classList.add(CSS[position.toLowerCase()]);
+    }
+
+    /**
      * Creating DOM tree
      */
     DOM.target = properties.target;
