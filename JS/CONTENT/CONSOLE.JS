@@ -42,17 +42,6 @@ function Console(properties)
     }
 
     /**
-     * Setts size of the console
-     * @param {String} width - width to set
-     * @param {String} height - height to set
-     */
-    this.setSize = function(width, height)
-    {
-        DOM.console.style.width = width;
-        DOM.console.style.height = height;
-    }
-
-    /**
      * Setts interface preset
      * @param {String} preset - preset to set
      */
