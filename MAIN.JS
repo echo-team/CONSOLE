@@ -6,7 +6,6 @@ function init(request)
         {
             var customConsole = new Console({parent: document.body});
 
-            customConsole.setSize("100%", "100%");
             chrome.runtime.sendMessage({type: "CONSOLE_STATE", console: true});
             window.addEventListener("beforeunload",
                 function(event)
