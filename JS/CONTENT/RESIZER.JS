@@ -4,7 +4,7 @@
  * @param {Element} properties.target    - element to track changes
  * @param {String}  properties.CSSWidth  - CSS variable with the width of target element
  * @param {String}  properties.CSSHeight - CSS variable with the height of target element
- * @param {Element} properties.CSSHolder - element where CSS variables defined
+ * @param {Element} properties.CSSHolder - element where CSS variables defined, <html> if not given
  */
 function Resizer(properties)
 {
@@ -32,8 +32,8 @@ function Resizer(properties)
             bottom: "RESIZER--BOTTOM",
             variables:
             {
-                targetWidth: properties.CSSWidth,
-                targetHeight: properties.CSSHeight
+                targetWidth: properties.CSSWidth || document.documentElement,
+                targetHeight: properties.CSSHeight || document.documentElement
             }
         }
 
