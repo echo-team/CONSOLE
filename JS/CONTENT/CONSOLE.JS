@@ -29,8 +29,15 @@ function Console(properties)
 
     /**
      * Tabed interface
+     * @type {Object}
      */
     var interface;
+
+    /**
+     * Panel to resize custom console
+     * @type {Object}
+     */
+    var resizer;
 
     /**
      * Setts interface orientation
@@ -66,4 +73,9 @@ function Console(properties)
     interface.newSection("Консоль", "Инструменты");
     interface.newSection("Палитра", "Инструменты");
     interface.newSection("Настройки", "Прочее");
+
+    /**
+     * Creating resizer panel
+     */
+    resizer = new Resizer({target: DOM.console, CSSWidth: "--CONSOLE-WIDTH", CSSHeight: "--CONSOLE-HEIGHT"});
 }
