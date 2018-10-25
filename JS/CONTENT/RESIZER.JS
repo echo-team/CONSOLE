@@ -25,6 +25,7 @@ function Resizer(properties)
      */
     var CSS =
         {
+            noTextSelection: "NOTEXTSELECTION",
             resizer: "RESIZER",
             left: "RESIZER--LEFT",
             right: "RESIZER--RIGTH",
@@ -32,8 +33,8 @@ function Resizer(properties)
             bottom: "RESIZER--BOTTOM",
             variables:
             {
-                targetWidth: properties.CSSWidth || document.documentElement,
-                targetHeight: properties.CSSHeight || document.documentElement
+                targetWidth: properties.CSSWidth,
+                targetHeight: properties.CSSHeight
             }
         }
 
@@ -41,7 +42,7 @@ function Resizer(properties)
      * The current position of panel
      * @type {String} - "LEFT", "RIGHT", "TOP" or "BOTTOM"
      */
-    var position = null;
+    var position;
 
     /**
      * Parces an event after pannel was dragged
@@ -51,22 +52,22 @@ function Resizer(properties)
     {
         switch(position)
         {
-            case ("RIGHT"):
+            case ("LEFT"):
 
                 DOM.CSSHolder.style.setProperty(CSS.variables.targetWidth, event.pageX - DOM.target.getBoundingClientRect().left + "PX");
                 break;
 
-            case ("LEFT"):
+            case ("RIGHT"):
 
                 DOM.CSSHolder.style.setProperty(CSS.variables.targetWidth, DOM.target.getBoundingClientRect().right - event.pageX + "PX");
                 break;
 
-            case ("BOTTOM"):
+            case ("TOP"):
 
                 DOM.CSSHolder.style.setProperty(CSS.variables.targetHeight, event.pageY - DOM.target.getBoundingClientRect().top + "PX");
                 break;
 
-            case ("TOP"):
+            case ("BOTTOM"):
 
                 DOM.CSSHolder.style.setProperty(CSS.variables.targetHeight, DOM.target.getBoundingClientRect().bottom - event.pageY + "PX");
                 break;
@@ -78,6 +79,7 @@ function Resizer(properties)
      */
     var turnOff = function()
     {
+        document.documentElement.classList.remove(CSS.noTextSelection);
         document.body.removeEventListener("mousemove", resize);
         document.body.removeEventListener("mouseup", turnOff);
     }.bind(this);
@@ -87,6 +89,7 @@ function Resizer(properties)
      */
     function turnOn()
     {
+        document.documentElement.classList.add(CSS.noTextSelection);
         document.body.addEventListener("mousemove", resize);
         document.body.addEventListener("mouseup", turnOff);
     }
@@ -110,6 +113,6 @@ function Resizer(properties)
      * Creating DOM tree
      */
     DOM.target = properties.target;
-    DOM.CSSHolder = properties.CSSHolder;
+    DOM.CSSHolder = properties.CSSHolder || document.documentElement;
     DOM.panel = DOM.target.newChildElement("div", {classList: CSS.resizer, eventListeners: {"mousedown": turnOn.bind(this)}});
 }
