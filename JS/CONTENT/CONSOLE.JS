@@ -24,7 +24,14 @@ function Console(properties)
     var CSS =
         {
             console: "CONSOLE",
-            hidden: "HIDDEN"
+            hidden: "HIDDEN",
+            positions:
+            {
+                left: "CONSOLE--LEFT",
+                top: "CONSOLE--TOP",
+                right: "CONSOLE--RIGHT",
+                bottom: "CONSOLE--BOTTOM"
+            }
         }
 
     /**
@@ -40,6 +47,12 @@ function Console(properties)
     var resizer;
 
     /**
+     * Current position of the custom console ("LEFT", "TOP", "RIGHT" or "BOTTOM")
+     * @type {String}
+     */
+    var currentPosition;
+
+    /**
      * Setts position of console to calculate resizer position and init resizer if it wasn't initted
      * @param {String} position - position of the console ("LEFT", "RIGHT", "TOP" or "BOTTOM")
      */
@@ -48,9 +61,16 @@ function Console(properties)
         if (!resizer)
         {
             resizer = new Resizer({target: DOM.console, CSSWidth: "--CONSOLE-WIDTH", CSSHeight: "--CONSOLE-HEIGHT"});
+
+            document.documentElement.style.setProperty("--CONSOLE-WIDTH", "400PX");
+            document.documentElement.style.setProperty("--CONSOLE-HEIGHT", "280PX");
         }
 
-        resizer.setPosition(position);
+        DOM.console.classList.remove(currentPosition);
+        currentPosition = position;
+
+        DOM.console.classList.add(CSS.positions[currentPosition.toLowerCase()]);
+        resizer.setPosition(currentPosition);
     }
 
     /**

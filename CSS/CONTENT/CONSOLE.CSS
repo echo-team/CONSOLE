@@ -11,3 +11,23 @@
     WIDTH: VAR(--CONSOLE-WIDTH);
     HEIGHT: VAR(--CONSOLE-HEIGHT);
 }
+
+.CONSOLE--LEFT
+{
+    HEIGHT: 100%;
+}
+
+.CONSOLE--TOP
+{
+    WIDTH: 100%;
+}
+
+.CONSOLE--RIGHT
+{
+    HEIGHT: 100%;
+}
+
+.CONSOLE--BOTTOM
+{
+    WIDTH: 100%;
+}

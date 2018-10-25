@@ -97,7 +97,7 @@ function Resizer(properties)
      */
     this.setPosition = function(newPosition)
     {
-        if (!position)
+        if (position)
         {
             DOM.panel.classList.remove(CSS[position.toLowerCase()]);
         }
