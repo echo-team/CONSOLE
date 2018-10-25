@@ -8,28 +8,28 @@
 
 .RESIZER--TOP
 {
-    TOP: 0%;
+    BOTTOM: 0%;
     WIDTH: 100%;
     HEIGHT: VAR(--RESIZER-WEIGHT);
 }
 
 .RESIZER--BOTTOM
 {
-    BOTTOM: 0%;
+    TOP: 0%;
     WIDTH: 100%;
     HEIGHT: VAR(--RESIZER-WEIGHT);
 }
 
 .RESIZER--LEFT
 {
-    LEFT: 0%;
+    RIGHT: 0%;
     WIDTH: VAR(--RESIZER-WEIGHT);
     HEIGHT: 100%;
 }
 
 .RESIZER--RIGHT
 {
-    RIGHT: 0%;
+    LEFT: 0%;
     WIDTH: VAR(--RESIZER-WEIGHT);
     HEIGHT: 100%;
 }

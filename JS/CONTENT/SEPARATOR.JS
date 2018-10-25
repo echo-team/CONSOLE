@@ -97,7 +97,7 @@ function Separator(properties)
     customPage = properties.page;
     customConsole = properties.console;
 
-    setConsolePosition("BOTTOM");
+    setConsolePosition("LEFT");
 
     document.unquantCSS();
     DOM.separator.setCSS(CSS.separator.animate);
