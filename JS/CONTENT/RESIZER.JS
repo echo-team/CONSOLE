@@ -25,6 +25,7 @@ function Resizer(properties)
      */
     var CSS =
         {
+            ignoreInnerMouseEvents: "IGNOREINNERMOUSEEVENTS",
             noTextSelection: "NOTEXTSELECTION",
             resizer: "RESIZER",
             left: "RESIZER--LEFT",
@@ -82,6 +83,11 @@ function Resizer(properties)
         document.documentElement.classList.remove(CSS.noTextSelection);
         document.body.removeEventListener("mousemove", resize);
         document.body.removeEventListener("mouseup", turnOff);
+        Array.from(document.getElementsByTagName("iframe")).forEach(
+            function(frame)
+            {
+                frame.classList.remove(CSS.ignoreInnerMouseEvents);
+            });
     }.bind(this);
 
     /**
@@ -92,6 +98,11 @@ function Resizer(properties)
         document.documentElement.classList.add(CSS.noTextSelection);
         document.body.addEventListener("mousemove", resize);
         document.body.addEventListener("mouseup", turnOff);
+        Array.from(document.getElementsByTagName("iframe")).forEach(
+            function(frame)
+            {
+                frame.classList.add(CSS.ignoreInnerMouseEvents);
+            });
     }
 
     /**
