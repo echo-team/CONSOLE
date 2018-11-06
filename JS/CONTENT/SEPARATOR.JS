@@ -25,7 +25,14 @@ function Separator(properties)
             {
                 normal: "SEPARATOR",
                 animate: "SEPARATOR--ANIMATED",
-                shrinked: "SEPARATOR--SHRINKED"
+                shrinked: "SEPARATOR--SHRINKED",
+                moved:
+                {
+                    left: "SEPARATOR__MOVED--LEFT",
+                    top: "SEPARATOR__MOVED--TOP",
+                    right: "SEPARATOR__MOVED--RIGHT",
+                    bottom: "SEPARATOR__MOVED--BOTTOM"
+                }
             },
             orientation:
             {
@@ -54,6 +61,18 @@ function Separator(properties)
     var customPage;
 
     /**
+     * Current mode of console toggling ("SHRINKED" or "MOVED")
+     * @type {String}
+     */
+    var toggleMode = "MOVED";
+
+    /**
+     * Current orientation ("LEFT", "TOP", "BOTTOM" or "RIGHT")
+     * @type {String}
+     */
+    var currentOrientation;
+
+    /**
      * Sets position of the console
      * @param {String} orientation - orientation of the console: top, bottom, left or right
      */
@@ -68,6 +87,7 @@ function Separator(properties)
             customConsole.setOrientation("album");
         }
 
+        currentOrientation = orientation;
         customConsole.setPosition(orientation);
         DOM.separator.classList.add(CSS.orientation[orientation.toLowerCase()]);
     }
@@ -77,7 +97,14 @@ function Separator(properties)
      */
     this.openConsole = function()
     {
-        DOM.separator.setCSS(CSS.separator.shrinked);
+        if (toggleMode == "SHRINKED")
+        {
+            DOM.separator.setCSS(CSS.separator.shrinked);
+        }
+        else
+        {
+            DOM.separator.setCSS(CSS.separator.moved[currentOrientation.toLowerCase()]);
+        }
     }
 
     /**
@@ -85,7 +112,14 @@ function Separator(properties)
      */
     this.closeConsole = function()
     {
-        DOM.separator.removeCSS(CSS.separator.shrinked);
+        if (toggleMode == "SHRINKED")
+        {
+            DOM.separator.removeCSS(CSS.separator.shrinked);
+        }
+        else
+        {
+            DOM.separator.removeCSS(CSS.separator.moved[currentOrientation.toLowerCase()]);
+        }
     }
 
     /**
