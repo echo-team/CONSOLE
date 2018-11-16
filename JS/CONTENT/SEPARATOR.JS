@@ -61,10 +61,10 @@ function Separator(properties)
     var customPage;
 
     /**
-     * Current mode of console toggling ("SHRINKED" or "MOVED")
+     * Current mode of console toggling ("SHRINK" or "MOVE")
      * @type {String}
      */
-    var toggleMode = "MOVED";
+    var toggleMode = "MOVE";
 
     /**
      * Current orientation ("LEFT", "TOP", "BOTTOM" or "RIGHT")
@@ -97,7 +97,7 @@ function Separator(properties)
      */
     this.openConsole = function()
     {
-        if (toggleMode == "SHRINKED")
+        if (toggleMode == "SHRINK")
         {
             DOM.separator.setCSS(CSS.separator.shrinked);
         }
@@ -112,7 +112,7 @@ function Separator(properties)
      */
     this.closeConsole = function()
     {
-        if (toggleMode == "SHRINKED")
+        if (toggleMode == "SHRINK")
         {
             DOM.separator.removeCSS(CSS.separator.shrinked);
         }
