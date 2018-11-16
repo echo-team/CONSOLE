@@ -1,7 +1,9 @@
 /**
  * Console class inserting to a page
- * @param {Object} properties     - settings of the class
- * @param {String} properties.URL - URL link of the target page to monitor with console
+ * @param {Object} properties         - settings of the class
+ * @param {String} properties.URL     - URL link of the target page to monitor with console
+ * @param {Object} properties.console - instance of Console class
+ * @param {Object} properties.page    - instance of Page class
  */
 function Separator(properties)
 {
@@ -10,10 +12,8 @@ function Separator(properties)
      */
     var DOM =
         {
-            parent: null,
-            wrap: null,
-            container: null,
-            page: null
+            separator: null,
+            resizer: null
         }
 
     /**
@@ -21,23 +21,30 @@ function Separator(properties)
      */
     var CSS =
         {
-            wrap:
+            separator:
             {
-                console: "SEPARATOR__WRAP--CONSOLE",
-                top: "SEPARATOR__WRAP--TOP",
-                bottom: "SEPARATOR__WRAP--BOTTOM",
-                left: "SEPARATOR__WRAP--LEFT",
-                right: "SEPARATOR__WRAP--RIGHT",
-                common: "SEPARATOR__WRAP"
+                normal: "SEPARATOR",
+                animate: "SEPARATOR--ANIMATED",
+                shrinked: "SEPARATOR--SHRINKED",
+                moved:
+                {
+                    left: "SEPARATOR__MOVED--LEFT",
+                    top: "SEPARATOR__MOVED--TOP",
+                    right: "SEPARATOR__MOVED--RIGHT",
+                    bottom: "SEPARATOR__MOVED--BOTTOM"
+                }
             },
-            container: "SEPARATOR__CONTAINER",
-            page:
+            orientation:
             {
-                top: "SEPARATOR__PAGE--TOP",
-                bottom: "SEPARATOR__PAGE--BOTTOM",
-                left: "SEPARATOR__PAGE--LEFT",
-                right: "SEPARATOR__PAGE--RIGHT",
-                common: "SEPARATOR__PAGE"
+                left: "SEPARATOR--LEFT",
+                top: "SEPARATOR--TOP",
+                right: "SEPARATOR--RIGHT",
+                bottom: "SEPARATOR--BOTTOM"
+            },
+            varuables:
+            {
+                separatorWidth: "--SEPARATOR-WIDTH",
+                separatorHeight: "--SEPARATOR-HEIGHT"
             }
         }
 
@@ -48,12 +55,30 @@ function Separator(properties)
     var customConsole;
 
     /**
-     * Sets position of the console
-     * @param {String} position - position of the console: top, bottom, left or right
+     * Instance of Page class
+     * @type {Console}
      */
-    function setConsolePosition(position)
+    var customPage;
+
+    /**
+     * Current mode of console toggling ("SHRINK" or "MOVE")
+     * @type {String}
+     */
+    var toggleMode = "MOVE";
+
+    /**
+     * Current orientation ("LEFT", "TOP", "BOTTOM" or "RIGHT")
+     * @type {String}
+     */
+    var currentOrientation;
+
+    /**
+     * Sets position of the console
+     * @param {String} orientation - orientation of the console: top, bottom, left or right
+     */
+    function setConsolePosition(orientation)
     {
-        if (["LEFT", "RIGHT"].indexOf(position) > -1)
+        if (["LEFT", "RIGHT"].indexOf(orientation) > -1)
         {
             customConsole.setOrientation("portrait");
         }
@@ -62,74 +87,9 @@ function Separator(properties)
             customConsole.setOrientation("album");
         }
 
-        position = position.toLowerCase();
-
-        DOM.wrap.classList.add(CSS.wrap[position]);
-        DOM.page.classList.add(CSS.page[position]);
-    }
-
-    /**
-     * Sets DOM mutation listener for reacting on page header changing
-     * @param {Element} title - DOM title element
-     */
-    function setTitleListener(title)
-    {
-        document.title = title.innerHTML;
-
-        var titleListener = new MutationObserver(
-            (function(title)
-            {
-                document.title = title.innerHTML;
-            }).bind(null, title)
-        );
-
-        titleListener.observe(title, {characterData: true, childList: true, subtree: true});
-    }
-
-    /**
-     * Sets current tab name from iframe page name
-     */
-    function setTabName()
-    {
-        if (!DOM.page.contentDocument.title)
-        {
-            var titleWaiter = new MutationObserver(
-                (function(mutations)
-                {
-                    mutations.forEach(
-                        (function(mutation)
-                        {
-                            if (!mutation.addedNodes)
-                            {
-                                return;
-                            }
-
-                            mutation.addedNodes.forEach(
-                                (function(node)
-                                {
-                                    if (node.tagName == "TITLE")
-                                    {
-                                        titleWaiter.disconnect();
-                                        setTitleListener(node);
-                                    }
-                                }).bind(this)
-                            );
-                        }).bind(this)
-                    );
-                }).bind(this)
-            );
-
-            titleWaiter.observe(DOM.page.contentDocument, {childList: true, subtree: true});
-        }
-        else
-        {
-            setTitleListener();
-        }
-    }
-
-    function createPage(event)
-    {
-        new Page();
+        currentOrientation = orientation;
+        customConsole.setPosition(orientation);
+        DOM.separator.classList.add(CSS.orientation[orientation.toLowerCase()]);
     }
 
     /**
@@ -137,7 +97,14 @@ function Separator(properties)
      */
     this.openConsole = function()
     {
-        DOM.wrap.classList.add(CSS.wrap.console);
+        if (toggleMode == "SHRINK")
+        {
+            DOM.separator.setCSS(CSS.separator.shrinked);
+        }
+        else
+        {
+            DOM.separator.setCSS(CSS.separator.moved[currentOrientation.toLowerCase()]);
+        }
     }
 
     /**
@@ -145,21 +112,29 @@ function Separator(properties)
      */
     this.closeConsole = function()
     {
-        DOM.wrap.classList.remove(CSS.wrap.console);
+        if (toggleMode == "SHRINK")
+        {
+            DOM.separator.removeCSS(CSS.separator.shrinked);
+        }
+        else
+        {
+            DOM.separator.removeCSS(CSS.separator.moved[currentOrientation.toLowerCase()]);
+        }
     }
 
     /**
      * Creating DOM tree of the class
      */
-    DOM.parent = document.body;
-    DOM.wrap = DOM.parent.newChildElement("div", {classList: CSS.wrap.common});
-    DOM.container = DOM.wrap.newChildElement("div", {classList: CSS.container});
-    DOM.page = DOM.wrap.newChildElement("iframe", {classList: CSS.page.common, src: properties.URL});
-    DOM.page.setEventListeners({"startloading": [createPage.bind(this), setTabName.bind(this)]});
+    DOM.separator = document.body;
+    DOM.separator.setCSS(CSS.separator.normal);
 
-    customConsole = new Console({parent: DOM.container});
+    customPage = properties.page;
+    customConsole = properties.console;
+
     setConsolePosition("LEFT");
 
+    document.unquantCSS();
+    DOM.separator.setCSS(CSS.separator.animate);
 
     /**
      * Setting messaging manager

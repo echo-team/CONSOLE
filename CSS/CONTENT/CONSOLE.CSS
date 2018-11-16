@@ -1,0 +1,34 @@
+:ROOT
+{
+    --CONSOLE-WIDTH: 100%;
+    --CONSOLE-HEIGHT: 100%;
+}
+
+.CONSOLE
+{
+    POSITION: RELATIVE;
+    DISPLAY: FLEX;
+    Z-INDEX: 0;
+    WIDTH: VAR(--CONSOLE-WIDTH);
+    HEIGHT: VAR(--CONSOLE-HEIGHT);
+}
+
+.CONSOLE--LEFT
+{
+    HEIGHT: 100%;
+}
+
+.CONSOLE--TOP
+{
+    WIDTH: 100%;
+}
+
+.CONSOLE--RIGHT
+{
+    HEIGHT: 100%;
+}
+
+.CONSOLE--BOTTOM
+{
+    WIDTH: 100%;
+}

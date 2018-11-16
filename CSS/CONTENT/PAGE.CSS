@@ -1,0 +1,7 @@
+.PAGE
+{
+    DISPLAY: FLEX;
+    FLEX-GROW: 1;
+    Z-INDEX: 1;
+    BORDER: NONE;
+}

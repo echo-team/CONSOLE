@@ -29,3 +29,8 @@ Array.prototype.indexOfObject = function(property, value)
         }).bind(this)
     );
 }
+
+Document.prototype.unquantCSS = function()
+{
+    document.body.offsetHeight;
+}
