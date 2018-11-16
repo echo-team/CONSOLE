@@ -29,7 +29,7 @@ function Resizer(properties)
             noTextSelection: "NOTEXTSELECTION",
             resizer: "RESIZER",
             left: "RESIZER--LEFT",
-            right: "RESIZER--RIGTH",
+            right: "RESIZER--RIGHT",
             top: "RESIZER--TOP",
             bottom: "RESIZER--BOTTOM",
             variables:
